@@ -6,7 +6,6 @@ const con = require("./config/db");
 const usersRoute = require("./routes/usersRouter");
 
 apps.use(bodyParse.json());
-
 apps.get("/", (req, res) => res.send("Welcome Laundry"));
 apps.use("/users", usersRoute);
 con

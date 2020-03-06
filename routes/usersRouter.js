@@ -1,7 +1,6 @@
 const express = require("express");
-
+const parseJson = require("parse-json");
 const router = express.Router();
-
 const usersModel = require("../model/usersModel");
 
 router.get("/", async (req, res) => {
@@ -33,4 +32,33 @@ router.post("/", async (req, res) => {
     });
 });
 
+router.post("/register", async (req, res) => {
+  try {
+    const noHead = req.query.no_headphone;
+    const users = await usersModel
+      .findAll({
+        where: {
+          no_headphone: noHead
+        }
+      })
+      .then(data => {
+        const notelp = data[0].no_headphone;
+        if (notelp == noHead) {
+          res.json({
+            status: 401,
+            massage: "No. Telepon Sudah Terdaftar",
+            data: false
+          });
+        } else {
+          res.json({
+            status: 200,
+            massage: "Success Register " + req.query.no_headphone,
+            data: true
+          });
+        }
+      });
+  } catch (err) {
+    console.log(err);
+  }
+});
 module.exports = router;
