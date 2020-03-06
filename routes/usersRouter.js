@@ -67,15 +67,24 @@ router.post("/register/account", async (req, res) => {
       .create({
         nama: req.body.nama,
         no_headphone: req.body.no_headphone,
+        password: req.body.password,
         alamat: req.body.alamat,
         role: req.body.role
       })
       .then(datas => {
-        res.json({
-          status: 200,
-          massage: "Success Create New Account",
-          data: datas
-        });
+        if (req.body.nama == null) {
+          res.json({
+            status: 401,
+            massage: "Failed Create New Account",
+            data: error
+          });
+        } else {
+          res.json({
+            status: 200,
+            massage: "Success Create New Account",
+            data: datas
+          });
+        }
       });
   } catch (error) {
     res.json({
@@ -85,4 +94,31 @@ router.post("/register/account", async (req, res) => {
     });
   }
 });
+router.post("/login", async (req, res) => {
+  const noHead = req.query.no_headphone;
+  const pass = req.query.password;
+  try {
+    const users = await usersModel
+      .findAll({
+        where: {
+          no_headphone: noHead,
+          password: pass
+        }
+      })
+      .then(datas => {
+        res.json({
+          status: 200,
+          massage: "Success Login",
+          data: datas
+        });
+      });
+  } catch (error) {
+    res.json({
+      status: 401,
+      massage: "Failed login",
+      data: error
+    });
+  }
+});
+
 module.exports = router;

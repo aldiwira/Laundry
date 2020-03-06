@@ -15,6 +15,9 @@ const users = sequelize.define(
     no_headphone: {
       type: Sequelize.STRING
     },
+    password: {
+      type: Sequelize.STRING
+    },
     alamat: {
       type: Sequelize.STRING
     },
