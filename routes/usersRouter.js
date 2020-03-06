@@ -106,11 +106,18 @@ router.post("/login", async (req, res) => {
         }
       })
       .then(datas => {
-        res.json({
-          status: 200,
-          massage: "Success Login",
-          data: datas
-        });
+        if (datas[0].no_headphone != noHead && datas[0].password != pass) {
+          res.json({
+            status: 401,
+            massage: "Failed login"
+          });
+        } else {
+          res.json({
+            status: 200,
+            massage: "Success Login",
+            data: datas
+          });
+        }
       });
   } catch (error) {
     res.json({
