@@ -61,4 +61,28 @@ router.post("/register", async (req, res) => {
     console.log(err);
   }
 });
+router.post("/register/account", async (req, res) => {
+  try {
+    const users = await usersModel
+      .create({
+        nama: req.body.nama,
+        no_headphone: req.body.no_headphone,
+        alamat: req.body.alamat,
+        role: req.body.role
+      })
+      .then(datas => {
+        res.json({
+          status: 200,
+          massage: "Success Create New Account",
+          data: datas
+        });
+      });
+  } catch (error) {
+    res.json({
+      status: 401,
+      massage: "Failed Create New Account",
+      data: error
+    });
+  }
+});
 module.exports = router;
