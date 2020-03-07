@@ -1,11 +1,13 @@
 const express = require("express");
 const apps = express();
-const bodyParse = require("body-parser");
+const bodyparse = require("body-parser");
+const conectionData = require("./config/db");
 const dotenv = require("dotenv/config");
-const con = require("./config/db");
 const usersRoute = require("./routes/usersRouter");
 
-apps.use(bodyParse.json());
+//midleware unch
+apps.use(express.json());
+apps.use(express.urlencoded({ extended: true }));
 apps.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header(
@@ -23,17 +25,14 @@ apps.use(function(req, res, next) {
     next();
   }
 });
+apps.use(bodyparse.json());
+//welcome
 apps.get("/", (req, res) => res.send("Welcome Laundry"));
-apps.use("/users", usersRoute);
-con
-  .authenticate()
-  .then(() => {
-    console.log("Connection established successfully.");
-  })
-  .catch(err => {
-    console.error("Unable to connect to the database:", err);
-  })
-  .finally();
+
+//endpoint users
+apps.use("/user", usersRoute);
+
+//listen port
 apps.listen(process.env.PORT_RUN, () => {
   console.log("http://" + process.env.DB_HOST + ":" + process.env.PORT_RUN);
 });
