@@ -3,7 +3,9 @@ const apps = express();
 const bodyparse = require("body-parser");
 const conectionData = require("./config/db");
 const dotenv = require("dotenv/config");
-const usersRoute = require("./routes/usersRouter");
+const usersRoute = require("./routes/UsersRouter");
+const transactionRoute = require("./routes/TransactionRouter");
+const priceRoute = require("./routes/PriceRouter");
 
 //midleware unch
 apps.use(express.json());
@@ -31,8 +33,9 @@ apps.get("/", (req, res) => res.send("Welcome Laundry"));
 
 //endpoint users
 apps.use("/user", usersRoute);
-
-//listen port
-apps.listen(process.env.PORT_RUN, () => {
-  console.log("http://" + process.env.DB_HOST + ":" + process.env.PORT_RUN);
-});
+apps.use("/order", transactionRoute);
+apps.use("/price", priceRoute),
+  //listen port
+  apps.listen(process.env.PORT_RUN, () => {
+    console.log("http://" + process.env.DB_HOST + ":" + process.env.PORT_RUN);
+  });
