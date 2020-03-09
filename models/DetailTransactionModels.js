@@ -1,20 +1,20 @@
+"use strict";
 const Sequelize = require("sequelize");
 const sequelize = require("../config/db");
 const dotenv = require("dotenv/config");
-module.exports = sequelize.define(
-  "transactions",
+
+const DetailTransactionModel = sequelize.define(
+  "detail_transactions",
   {
-    no_nota: {
-      type: Sequelize.STRING,
-      primaryKey: true
+    id_detail_transaction: {
+      type: Sequelize.INTEGER,
+      primaryKey: true,
+      autoIncrement: true
     },
-    total_tagihan: {
+    bobot: {
       type: Sequelize.INTEGER
     },
-    pembayaran: {
-      type: Sequelize.INTEGER
-    },
-    status_pembayaran: {
+    status: {
       type: Sequelize.BOOLEAN,
       defaultValue: false
     },
@@ -34,3 +34,5 @@ module.exports = sequelize.define(
     freezeTableName: true
   }
 );
+
+module.exports = DetailTransactionModel;
