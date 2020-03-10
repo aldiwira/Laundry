@@ -2,15 +2,19 @@ const transactionModel = require("../models/TransactionModel");
 const priceModel = require("../models/PriceModel");
 const userModel = require("../models/UsersModel");
 const detailTransaction = require("../models/DetailTransactionModels");
+const { queryTypes } = require("sequelize");
 
-detailTransaction.hasMany(userModel, { foreignKey: "id_user" });
-userModel.belongsTo(detailTransaction, { foreignKey: "id_user" });
+detailTransaction.belongsTo(transactionModel, { foreignKey: "no_nota" });
 
 module.exports = {
   processFetchTransaction: async (req, res) => {
-    detailTransaction
+    await detailTransaction
       .findAll({
-        include: [userModel]
+        include: [
+          {
+            model: transactionModel
+          }
+        ]
       })
       .then(datas => {
         res.status(200).json(datas);
