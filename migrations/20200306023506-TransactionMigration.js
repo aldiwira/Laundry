@@ -19,6 +19,13 @@ module.exports = {
                     type: Sequelize.BOOLEAN,
                     defaultValue: false,
                 },
+                id_user: {
+                    type: Sequelize.STRING,
+                    references: {
+                        model: 'users',
+                        key: 'id_user'
+                    }
+                },
                 createdAt: {
                     type: "TIMESTAMP",
                     defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
