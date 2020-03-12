@@ -17,13 +17,6 @@ module.exports = {
                     type: Sequelize.BOOLEAN,
                     defaultValue: false,
                 },
-                id_user: {
-                    type: Sequelize.STRING,
-                    references: {         
-                        model: 'users',
-                        key: 'id_user'
-                    }
-                },
                 no_nota: {
                     type: Sequelize.STRING,
                     references: {

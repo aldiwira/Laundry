@@ -7,15 +7,15 @@ module.exports = {
   up: (queryInterface, Sequelize) => {
         var data = [];
 
-        for (let i = 1; i <= 20; i++) {
+        for (let i = 1; i <= 5; i++) {
             data.push({
-                kelas: faker.commerce.product(),
-                tipe: faker.commerce.productName(),
-                harga: faker.commerce.price()
+                kelas: faker.random.arrayElement(['REGULER', 'EXPRESS']),
+                tipe: faker.random.arrayElement(['CUCI SELIMUT', 'CUCI BIASA', 'DUA JAM', 'SEHARI', 'RAPI BERSIH']),
+                harga: faker.commerce.price(5000, 20000)
             });
         }
 
-        return queryInterface.bulkInsert('users', data, {});
+        return queryInterface.bulkInsert('prices', data, {});
   },
 
   down: (queryInterface, Sequelize) => {

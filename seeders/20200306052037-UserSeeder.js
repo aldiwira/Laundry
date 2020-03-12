@@ -7,11 +7,12 @@ module.exports = {
   up: (queryInterface, Sequelize) => {
         var data = [];
 
-        for (let i = 1; i <= 10; i++) {
+        for (let i = 1; i <= 5; i++) {
             data.push({
                 id_user: faker.random.uuid(),
                 nama: faker.name.findName(),
                 no_headphone: faker.phone.phoneNumber(),
+                password: faker.internet.password(255, "password "),
                 alamat: faker.address.secondaryAddress(),
                 role: 0
             });

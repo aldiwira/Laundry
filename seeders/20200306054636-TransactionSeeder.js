@@ -4,19 +4,28 @@ var faker = require("faker");
 faker.locale = "en_IND";
 
 module.exports = {
-  up: (queryInterface, Sequelize) => {
-        var data = [];
+  up: async (queryInterface, Sequelize) => {
+      const result = await queryInterface.sequelize.query(`SELECT id_user FROM users;`);
 
-        for (let i = 1; i <= 10; i++) {
-            data.push({
-                no_nota: faker.random.alphaNumeric(),
-                total_tagihan: faker.commerce.price(),
-                pembayaran: faker.finance.amount(),
-                status_pembayaran: faker.random.boolean()
-            });
-        }
+      var users = [];
+      result[0].forEach(res => users.push(res.id_user));
 
-        return queryInterface.bulkInsert('users', data, {});
+      var data = [];
+      for (let i = 1; i <= 25; i++) {
+          const tagihan = faker.commerce.price(5000, 100000);
+          const status = faker.random.boolean();
+          const pembayaran = (status) ? tagihan : faker.commerce.price(5000, tagihan);
+
+          data.push({
+              no_nota: faker.internet.password(10),
+              total_tagihan: tagihan,
+              pembayaran: pembayaran,
+              status_pembayaran: status,
+              id_user: faker.random.arrayElement(users)
+          });
+      }
+
+      return queryInterface.bulkInsert('transactions', data, {});
   },
 
   down: (queryInterface, Sequelize) => {
