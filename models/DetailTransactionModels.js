@@ -18,6 +18,20 @@ const DetailTransactionModel = sequelize.define(
       type: Sequelize.BOOLEAN,
       defaultValue: false
     },
+    no_nota: {
+      type: Sequelize.STRING,
+      references: {
+        model: "transactions",
+        key: "no_nota"
+      }
+    },
+    id_harga: {
+      type: Sequelize.INTEGER,
+      references: {
+        model: "prices",
+        key: "id_harga"
+      }
+    },
     createdAt: {
       type: "TIMESTAMP",
       defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
