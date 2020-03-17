@@ -1,4 +1,4 @@
-const priceModel = require("../models/PriceModel");
+const priceModel = require("../models/PriceModel.js");
 
 module.exports = {
   fetchAllPriceDatas: async (req, res) => {

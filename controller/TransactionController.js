@@ -1,7 +1,7 @@
-const transactionModel = require("../models/TransactionModel");
-const priceModel = require("../models/PriceModel");
-const userModel = require("../models/UsersModel");
-const detailTransaction = require("../models/DetailTransactionModels");
+const transactionModel = require("../models/TransactionModel.js");
+const priceModel = require("../models/PriceModel.js");
+const userModel = require("../models/UsersModel.js");
+const detailTransaction = require("../models/DetailTransactionModels.js");
 const { queryTypes } = require("sequelize");
 let uniqid = require("uniqid");
 

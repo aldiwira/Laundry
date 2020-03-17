@@ -1,4 +1,4 @@
-const usersModel = require("../models/UsersModel");
+const usersModel = require("../models/UsersModel.js");
 
 module.exports = {
   processFetchUserDatas: async (req, res) => {

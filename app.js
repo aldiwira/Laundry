@@ -3,9 +3,9 @@ const apps = express();
 const bodyparse = require("body-parser");
 const conectionData = require("./config/db");
 const dotenv = require("dotenv/config");
-const usersRoute = require("./routes/UsersRouter");
-const transactionRoute = require("./routes/TransactionRouter");
-const priceRoute = require("./routes/PriceRouter");
+const usersRoute = require("./routes/UsersRouter.js");
+const transactionRoute = require("./routes/TransactionRouter.js");
+const priceRoute = require("./routes/PriceRouter.js");
 
 //midleware unch
 apps.use(express.json());
