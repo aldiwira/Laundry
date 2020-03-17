@@ -3,7 +3,7 @@ const apps = express();
 const bodyparse = require("body-parser");
 const conectionData = require("./config/db");
 const dotenv = require("dotenv/config");
-const usersRoute = require("./routes/UsersRouter.js");
+const usersRoute = require("./routes/usersRouter.js");
 const transactionRoute = require("./routes/TransactionRouter.js");
 const priceRoute = require("./routes/PriceRouter.js");
 
