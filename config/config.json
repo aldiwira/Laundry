@@ -1,0 +1,27 @@
+{
+  "development": {
+    "username": "admin",
+    "password": "akusayangkamu",
+    "database": "laundryin",
+    "host": "mysql-7761-0.cloudclusters.net",
+    "port": 7808,
+    "dialect": "mysql",
+    "operatorsAliases": false
+  },
+  "test": {
+    "username": "root",
+    "password": "nganu",
+    "database": "database_test",
+    "host": "127.0.0.1",
+    "dialect": "mysql",
+    "operatorsAliases": false
+  },
+  "production": {
+    "username": "root",
+    "password": "nganu",
+    "database": "database_production",
+    "host": "127.0.0.1",
+    "dialect": "mysql",
+    "operatorsAliases": false
+  }
+}
