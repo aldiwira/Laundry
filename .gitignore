@@ -2,6 +2,8 @@
 .vscode
 .idea
 config/config.json
+npm-debug.log
+.DS_Store
 
 # Directory
 node_modules

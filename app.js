@@ -29,7 +29,12 @@ apps.use(function(req, res, next) {
 });
 apps.use(bodyparse.json());
 //welcome
-apps.get("/", (req, res) => res.send("Welcome Laundry"));
+apps.get("/", (req, res) => {
+  res.status(200).json({
+    status: 200,
+    Message: "Welcome To DeLaundry"
+  });
+});
 
 //endpoint users
 apps.use("/user", usersRoute);
