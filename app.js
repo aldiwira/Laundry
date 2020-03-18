@@ -3,11 +3,11 @@ const apps = express();
 const bodyparse = require("body-parser");
 const conectionData = require("./config/db");
 const dotenv = require("dotenv/config");
-const usersRoute = require("./routes/usersRouter.js");
+const usersRoute = require("./routes/UsersRouter.js");
 const transactionRoute = require("./routes/TransactionRouter.js");
 const priceRoute = require("./routes/PriceRouter.js");
-const port = process.env.PORT || 3000;
-//midleware unch
+
+// midleware
 apps.use(express.json());
 apps.use(express.urlencoded({ extended: true }));
 apps.use(function(req, res, next) {
@@ -35,12 +35,11 @@ apps.get("/", (req, res) => {
     Message: "Welcome To DeLaundry"
   });
 });
-
 //endpoint users
 apps.use("/user", usersRoute);
 apps.use("/order", transactionRoute);
-apps.use("/price", priceRoute),
-  //listen port
-  apps.listen(port, () => {
-    console.log("Magic at " + port);
-  });
+apps.use("/prices", priceRoute);
+//listen port
+apps.listen(process.env.PORT_RUN, () => {
+  console.log("http://" + process.env.DB_HOST + ":" + process.env.PORT_RUN);
+});

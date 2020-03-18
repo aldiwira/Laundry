@@ -11,7 +11,7 @@ module.exports = {
             data.push({
                 id_user: faker.random.uuid(),
                 nama: faker.name.findName(),
-                no_headphone: faker.phone.phoneNumber(),
+                no_handphone: faker.phone.phoneNumber(),
                 password: faker.internet.password(255, "password "),
                 alamat: faker.address.secondaryAddress(),
                 role: 0

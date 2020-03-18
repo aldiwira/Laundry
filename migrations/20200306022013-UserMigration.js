@@ -12,7 +12,7 @@ module.exports = {
         nama: {
           type: Sequelize.STRING
         },
-        no_headphone: {
+        no_handphone: {
           type: Sequelize.STRING
         },
         password: {
