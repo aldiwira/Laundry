@@ -11,7 +11,7 @@ const users = sequelize.define(
     nama: {
       type: Sequelize.STRING
     },
-    no_headphone: {
+    no_handphone: {
       type: Sequelize.STRING
     },
     password: {
