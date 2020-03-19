@@ -10,6 +10,7 @@ const priceRoute = require("./routes/PriceRouter.js");
 // midleware
 apps.use(express.json());
 apps.use(express.urlencoded({ extended: true }));
+apps.use(bodyparse.json());
 apps.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header(
@@ -27,7 +28,6 @@ apps.use(function(req, res, next) {
     next();
   }
 });
-apps.use(bodyparse.json());
 //welcome
 apps.get("/", (req, res) => {
   res.status(200).json({
