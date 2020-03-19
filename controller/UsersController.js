@@ -75,14 +75,21 @@ module.exports = {
       .then(datas => {
         let code;
         let message;
-
-        if (datas.length === 1) {
+        let status;
+        if (datas) {
           code = response.CODE_UNAUTHORIZED;
           message = "No Handphone Sudah Terdaftar";
+          status = false;
         } else {
           code = response.CODE_SUCCESS;
           message = "No Handphone Valid.";
+          status = true;
         }
+        res.status(code).json(response.set(code, message, status));
+      })
+      .catch(err => {
+        let code = response.CODE_FAILURE;
+        let message = "No Handphone Sudah Terdaftar";
         res.status(code).json(response.set(code, message, datas));
       });
   }
