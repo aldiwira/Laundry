@@ -1,10 +1,11 @@
 'use strict';
 
-var faker = require("faker");
+const faker = require("faker");
+const bcrypt = require("bcrypt");
 faker.locale = "en_IND";
 
 module.exports = {
-  up: (queryInterface, Sequelize) => {
+  up: (queryInterface, _) => {
         var data = [];
 
         for (let i = 1; i <= 5; i++) {
@@ -12,7 +13,7 @@ module.exports = {
                 id_user: faker.random.uuid(),
                 nama: faker.name.findName(),
                 no_handphone: faker.phone.phoneNumber(),
-                password: faker.internet.password(255, "password "),
+                password: bcrypt.hashSync("password", 10),
                 alamat: faker.address.secondaryAddress(),
                 role: 0
             });
@@ -21,7 +22,7 @@ module.exports = {
         return queryInterface.bulkInsert('users', data, {});
   },
 
-  down: (queryInterface, Sequelize) => {
+  down: (queryInterface, _) => {
       return queryInterface.bulkDelete('users', null, {});
   }
 };
