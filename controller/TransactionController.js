@@ -11,8 +11,7 @@ let data;
 let message;
 
 transactionModel.hasMany(detailTransaction, { foreignKey: "no_nota" });
-transactionModel.hasMany(priceModel, { foreignKey: "id_harga" });
-
+detailTransaction.belongsTo(transactionModel);
 module.exports = {
   processFetchTransaction: async (req, res) => {
     const price = [{ model: priceModel, attributes: ["kelas"] }];
@@ -40,38 +39,42 @@ module.exports = {
       });
     res.status(code).send(response.set(code, message, data));
   },
+  //Create transaction but just one id_harga
   processCreateTransaction: async (req, res) => {
     let id_detail_transaction = uniqid.time();
     let no_nota = uniqid.time();
     let id_harga = req.body.id_harga;
     let id_user = req.body.id_user;
-    let transaction_detil = {
-      id_detail_transaction,
-      bobot: 0,
-      status: false,
-      no_nota,
-      id_harga
-    };
-    let transaction_node = {
-      no_nota,
-      total_tagihan: 0,
-      pembayaran: 0,
-      status_pembayaran: 0,
-      id_user
-    };
-    for (let index = 0; index < id_harga.length; index++) {
-      let i = id_harga[index];
-      detailTransaction
-        .create({
-          id_detail_transaction,
-          bobot: 0,
-          status: false,
+    transactionModel
+      .create(
+        {
           no_nota,
-          i
-        })
-        .then(datas => {
-          res.status(200).json(datas);
-        });
-    }
+          total_tagihan: 0,
+          pembayaran: 0,
+          status_pembayaran: 0,
+          id_user,
+          detail_transactions: {
+            bobot: 0,
+            status: false,
+            no_nota,
+            id_harga
+          }
+        },
+        {
+          include: [detailTransaction]
+        }
+      )
+      .then(datas => {
+        code = response.CODE_SUCCESS;
+        message = "Success Create Order";
+        data = datas;
+        res.status(code).json(response.set(code, message, data));
+      })
+      .then(err => {
+        code = response.CODE_FAILURE;
+        message = "Failed Create Order";
+        data = err;
+        res.status(code).json(response.set(code, message, data));
+      });
   }
 };
