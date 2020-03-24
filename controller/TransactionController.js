@@ -3,7 +3,12 @@ const priceModel = require("../models/PriceModel.js");
 const userModel = require("../models/UsersModel.js");
 const detailTransaction = require("../models/DetailTransactionModels.js");
 const { queryTypes } = require("sequelize");
+const response = require("./response");
 let uniqid = require("uniqid");
+let bcrypt = require("bcrypt");
+let code;
+let data;
+let message;
 
 transactionModel.hasMany(detailTransaction, { foreignKey: "no_nota" });
 transactionModel.hasMany(priceModel, { foreignKey: "id_harga" });
@@ -24,19 +29,16 @@ module.exports = {
         include: transactionDetail
       })
       .then(datas => {
-        res.status(200).json({
-          status: 200,
-          message: "Success Load Datas",
-          data: datas
-        });
+        code = response.CODE_SUCCESS;
+        data = datas;
+        message = "Success Load Datas";
       })
       .catch(err => {
-        res.status(401).json({
-          status: 401,
-          message: "Failed Get Order",
-          data: err
-        });
+        code = response.CODE_FAILURE;
+        data = err;
+        message = "Failed Get Order";
       });
+    res.status(code).send(response.set(code, message, data));
   },
   processCreateTransaction: async (req, res) => {
     let id_detail_transaction = uniqid.time();
