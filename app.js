@@ -39,7 +39,6 @@ apps.get("/", (req, res) => {
 //endpoint users
 apps.use("/user", usersRoute);
 apps.use("/order", transactionRoute);
-apps.use("/status", statusRoute);
 apps.use("/prices", priceRoute);
 //listen port
 apps.listen(process.env.PORT_RUN, () => {

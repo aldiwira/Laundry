@@ -95,8 +95,80 @@ module.exports = {
             .json(response.set(code, message, ""));
     },
 
-    /** [PUT]: /order */
-    processUpdateTransaction: async (req, res) => {
+    /** [PUT]: /order/:id_user/:no_nota/?status_pengerjaan=DONE */
+    updateTransaction: async (req, res) => {
+        const transaction = await transactionModel.findAll({
+            where: req.params
+        });
 
+        console.log(transaction[0]);
+
+        transaction[0]
+            .status_pengerjaan = req.query.status_pengerjaan;
+
+        await transaction[0]
+            .save()
+            .then(datas => {
+                code = response.CODE_SUCCESS;
+                message = "Success Saving Transactions";
+                res.status(code)
+                    .json(response.set(code, message, datas));
+            })
+            .catch(err => {
+                code = response.CODE_FAILURE;
+                message = "Failure Saving Transactions";
+                res.status(code)
+                    .json(response.set(code, message, err));
+            });
+    },
+
+    /** [PUT]: /order/:id_user/:no_nota/?status_pembayaran=0&pembayaran=1000*/
+    updatePayment: async (req, res) => {
+        const transaction = await transactionModel.findAll({
+            where: req.params
+        });
+
+        transaction[0].status_pembayaran = req.query.status_pembayaran;
+        transaction[0].pembayaran = req.query.pembayaran;
+
+        await transaction[0]
+            .save()
+            .then(datas => {
+                code = response.CODE_SUCCESS;
+                message = "Success Saving Transactions";
+                res.status(code)
+                    .json(response.set(code, message, datas));
+            })
+            .catch(err => {
+                code = response.CODE_FAILURE;
+                message = "Failure Saving Transactions";
+                res.status(code)
+                    .json(response.set(code, message, err));
+            });
+    },
+
+    /** [PUT]: /order/status/:id_detail_transactions?status=true/false */
+    updateStatus: async (req, res) => {
+        const transaction = await detailTransaction.findAll({
+            where: req.params
+        });
+
+        transaction[0]
+            .status = req.query.status;
+
+        await transaction[0]
+            .save()
+            .then(datas => {
+                code = response.CODE_SUCCESS;
+                message = "Success Load Transactions";
+                res.status(code)
+                    .json(response.set(code, message, datas));
+            })
+            .catch(err => {
+                code = response.CODE_FAILURE;
+                message = "Failure Load Transactions";
+                res.status(code)
+                    .json(response.set(code, message, err));
+            });
     },
 };
