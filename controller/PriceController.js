@@ -1,20 +1,25 @@
 const priceModel = require("../models/PriceModel.js");
 const response = require("./response");
 
+let code;
+let data;
+let message;
+
 module.exports = {
   fetchAllPriceDatas: async (req, res) => {
     await priceModel
       .findAll()
       .then(datas => {
-        const message = "Success Load Data Price";
-        res.status(response.CODE_UNAUTHORIZED)
-            .json(response.set(response.CODE_UNAUTHORIZED, message, datas));
+        message = "Success Load Data Price";
+        code = response.CODE_SUCCESS;
+        data = datas;
       })
       .catch(err => {
-        const message = "Success Load Data Price";
-        res.status(response.CODE_FAILURE)
-            .json(response.set(response.CODE_FAILURE, message, null));
+        message = "Success Load Data Price";
+        code = response.CODE_FAILURE;
+        data = null;
       });
+    res.status(code).json(response.set(code, message, data));
   },
   carryPriceData: async (req, res) => {
     await priceModel
