@@ -9,7 +9,6 @@ let data;
 let message;
 
 module.exports = {
-
   /**
    * Controller untuk login.
    * Sama seperti proses login pada umumnya terdapat validasi data
@@ -44,8 +43,7 @@ module.exports = {
             message = "Password Salah, Silahkan Ulangi Lagi";
           }
         }
-        res.status(code)
-            .json(response.set(code, message, data));
+        res.status(code).json(response.set(code, message, data));
       });
   },
 
@@ -69,15 +67,14 @@ module.exports = {
       .then(datas => {
         code = response.CODE_SUCCESS;
         message = "Success Create New Account";
-        res.status(code)
-            .json(response.set(code, message, datas));
+        data = datas;
       })
       .catch(err => {
         code = response.CODE_FAILURE;
         message = "Failed Create New Account";
-        res.status(code)
-            .json(response.set(code, message, err));
+        data = err;
       });
+    res.status(code).send(response.set(code, message, data));
   },
 
   /**
@@ -107,8 +104,7 @@ module.exports = {
           message = "No Handphone Sudah Terdaftar";
         }
 
-        res.status(code)
-            .json(response.set(code, message));
+        res.status(code).json(response.set(code, message));
       });
   }
 };
