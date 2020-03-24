@@ -1,45 +1,61 @@
 const usersModel = require("../models/UsersModel.js");
 const response = require("./response");
+const bcrypt = require("bcrypt");
 const { Op } = require("sequelize");
-let uniqid = require("uniqid");
+const uniqid = require("uniqid");
+
+let code;
+let data;
+let message;
 
 module.exports = {
+
+  /**
+   * Controller untuk login.
+   * Sama seperti proses login pada umumnya terdapat validasi data
+   * antara input yang dikirimkan user dan data yang terdapat pada database, seperti :
+   * - Checking no handphone sudah terdaftar atau belum.
+   * - Password menggunakan enkripsi dengan menggunakan password hashing function yaitu bcrypt.
+   *
+   * @param req
+   * @param res
+   * @returns {Promise<void>}
+   */
   processFetchUserDatas: async (req, res) => {
     await usersModel
       .findOne({
         where: {
-          /* TODO : Cek menggunakan klausa LIKE */
           no_handphone: {
-            [Op.like]: "%" + req.body.no_handphone + "%"
+            [Op.like]: "%" + req.body.no_handphone.trim()
           }
         }
       })
       .then(datas => {
-        let code;
-        let message;
-
-        if (datas.password === req.body.password) {
-          /* TODO : Cek menggunakan verify password*/
-          code = response.CODE_SUCCESS;
-          message = "Berhasil Login.";
+        if (datas == null) {
+          code = response.CODE_UNAUTHORIZED;
+          message = "No Handphone Tidak Dikenali";
         } else {
-          if (true) {
-            /* TODO : Cek Lagi kalo [datas] ada data berarti : */
+          if (bcrypt.compareSync(req.body.password, datas.password)) {
+            code = response.CODE_SUCCESS;
+            message = "Berhasil Login.";
+            data = datas;
+          } else {
             code = response.CODE_UNAUTHORIZED;
             message = "Password Salah, Silahkan Ulangi Lagi";
-          } else {
-            /* Cek Lagi kalo [datas] tidak ada data berarti : */
-            code = response.CODE_UNAUTHORIZED;
-            message = "No Handphone Tidak Dikenali";
           }
         }
-
-        res.status(code).json(response.set(code, message, datas));
+        res.status(code)
+            .json(response.set(code, message, data));
       });
   },
 
-  /* TODO : Gunakan Format Response sesuai contract */
-
+  /**
+   * Controller untuk melakukan pembuatan akun.
+   *
+   * @param req
+   * @param res
+   * @returns {Promise<void>}
+   */
   processRegisterAccount: async (req, res) => {
     await usersModel
       .create({
@@ -51,46 +67,48 @@ module.exports = {
         role: 0
       })
       .then(datas => {
-        let code = response.CODE_SUCCESS;
-        let message = "Success Create New Account";
-        res.status(code).json(response.set(code, message, datas));
+        code = response.CODE_SUCCESS;
+        message = "Success Create New Account";
+        res.status(code)
+            .json(response.set(code, message, datas));
       })
       .catch(err => {
-        let code = response.CODE_FAILURE;
-        let message = "Failed Create New Account";
-        res.status(code).json(response.set(code, message, err));
+        code = response.CODE_FAILURE;
+        message = "Failed Create New Account";
+        res.status(code)
+            .json(response.set(code, message, err));
       });
   },
 
+  /**
+   * Controller untuk Register no handphone.
+   * Disini dilakukan verifikasi untuk mengecek apakah no handphone
+   * yang di daftarkan valid atau tidak dengan mengecek no_handphone ada yang sama atau tidak.
+   *
+   * @param req
+   * @param res
+   * @returns {Promise<void>}
+   */
   processRegisterPhone: async (req, res) => {
     await usersModel
       .findOne({
         where: {
-          /* TODO : Cek menggunakan klausa LIKE */
           no_handphone: {
-            [Op.like]: "%" + req.body.no_handphone + "%"
+            [Op.like]: "%" + req.body.no_handphone.trim()
           }
         }
       })
       .then(datas => {
-        let code;
-        let message;
-        let status;
-        if (datas) {
-          code = response.CODE_UNAUTHORIZED;
-          message = "No Handphone Sudah Terdaftar";
-          status = false;
-        } else {
+        if (datas == null) {
           code = response.CODE_SUCCESS;
           message = "No Handphone Valid.";
-          status = true;
+        } else {
+          code = response.CODE_UNAUTHORIZED;
+          message = "No Handphone Sudah Terdaftar";
         }
-        res.status(code).json(response.set(code, message, status));
-      })
-      .catch(err => {
-        let code = response.CODE_FAILURE;
-        let message = "No Handphone Sudah Terdaftar";
-        res.status(code).json(response.set(code, message, datas));
+
+        res.status(code)
+            .json(response.set(code, message));
       });
   }
 };
