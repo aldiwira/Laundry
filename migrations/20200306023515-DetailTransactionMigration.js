@@ -8,10 +8,11 @@ module.exports = {
                 id_detail_transaction: {
                     type: Sequelize.INTEGER,
                     primaryKey: true,
-                    autoIncrement: true
+                    autoIncrement: true,
                 },
                 bobot: {
-                    type: Sequelize.INTEGER
+                    type: Sequelize.INTEGER,
+                    defaultValue: 0,
                 },
                 status: {
                     type: Sequelize.BOOLEAN,

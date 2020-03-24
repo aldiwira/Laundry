@@ -1,75 +1,102 @@
+const uniqid = require("uniqid");
+const { Op } = require("sequelize");
+const response = require('./response');
 const transactionModel = require("../models/TransactionModel.js");
-const priceModel = require("../models/PriceModel.js");
-const userModel = require("../models/UsersModel.js");
 const detailTransaction = require("../models/DetailTransactionModels.js");
-const { queryTypes } = require("sequelize");
-let uniqid = require("uniqid");
+
+let code;
+let message;
+const constraint = {
+    attributes: ["no_nota", "status_pembayaran", "createdAt", "updatedAt"],
+    include: [{
+        model: detailTransaction,
+        attributes: ["status", "bobot", "id_harga"]
+    }],
+    where: {}
+};
 
 transactionModel.hasMany(detailTransaction, { foreignKey: "no_nota" });
-transactionModel.hasMany(priceModel, { foreignKey: "id_harga" });
 
 module.exports = {
-  processFetchTransaction: async (req, res) => {
-    const price = [{ model: priceModel, attributes: ["kelas"] }];
-    const transactionDetail = [
-      {
-        model: detailTransaction,
-        attributes: ["id_detail_transaction", "status", "bobot", "id_harga"]
-      }
-    ];
-    const field = ["no_nota", "status_pembayaran", "createdAt", "updatedAt"];
-    await transactionModel
-      .findAll({
-        attributes: field,
-        include: transactionDetail
-      })
-      .then(datas => {
-        res.status(200).json({
-          status: 200,
-          message: "Success Load Datas",
-          data: datas
+
+    /** [GET] : /order/:id_user/status */
+    fetchStatus: async (req, res) => {
+        const _constraint = constraint;
+        _constraint.attributes.push("status_pengerjaan");
+        _constraint.where = {
+            id_user: req.params.id_user,
+            [Op.not]: {
+                status_pengerjaan: 'DONE'
+            }
+        };
+
+        await transactionModel
+            .findAll(_constraint)
+            .then(datas => {
+                code = response.CODE_SUCCESS;
+                message = "Success Load Transactions";
+                res.status(code)
+                    .json(response.set(code, message, datas));
+            })
+            .catch(err => {
+                code = response.CODE_FAILURE;
+                message = "Failure Load Transactions";
+                res.status(code)
+                    .json(response.set(code, message, err));
+            })
+    },
+
+    /** [GET] : /order/:id_user/history */
+    fetchHistory: async (req, res) => {
+        const _constraint = constraint;
+        _constraint.attributes.pop("status_pengerjaan");
+        _constraint.where = {
+            id_user: req.params.id_user,
+            status_pengerjaan: 'DONE',
+        };
+
+        await transactionModel
+            .findAll(_constraint)
+            .then(datas => {
+                code = response.CODE_SUCCESS;
+                message = "Success Load Transactions";
+                res.status(code)
+                    .json(response.set(code, message, datas));
+            })
+            .catch(err => {
+                code = response.CODE_FAILURE;
+                message = "Failure Load Transactions";
+                res.status(code)
+                    .json(response.set(code, message, err));
+            })
+    },
+
+    /** [POST]: /order
+     * Format Request : JSON :
+     * id_user: "",
+     * id_harga: []
+     * */
+    processCreateTransaction: async (req, res) => {
+        const no_nota = uniqid.time();
+
+        await transactionModel.create({
+            no_nota: no_nota,
+            id_user: req.body.id_user
         });
-      })
-      .catch(err => {
-        res.status(401).json({
-          status: 401,
-          message: "Failed Get Order",
-          data: err
-        });
-      });
-  },
-  processCreateTransaction: async (req, res) => {
-    let id_detail_transaction = uniqid.time();
-    let no_nota = uniqid.time();
-    let id_harga = req.body.id_harga;
-    let id_user = req.body.id_user;
-    let transaction_detil = {
-      id_detail_transaction,
-      bobot: 0,
-      status: false,
-      no_nota,
-      id_harga
-    };
-    let transaction_node = {
-      no_nota,
-      total_tagihan: 0,
-      pembayaran: 0,
-      status_pembayaran: 0,
-      id_user
-    };
-    for (let index = 0; index < id_harga.length; index++) {
-      let i = id_harga[index];
-      detailTransaction
-        .create({
-          id_detail_transaction,
-          bobot: 0,
-          status: false,
-          no_nota,
-          i
-        })
-        .then(datas => {
-          res.status(200).json(datas);
-        });
-    }
-  }
+
+        await req.body.id_harga.forEach(price => detailTransaction.create({
+            id_harga: price,
+            no_nota: no_nota,
+        }));
+
+        code = response.CODE_SUCCESS;
+        message = "Success Create Transactions";
+        res.status(code)
+            .json(response.set(code, message, ""));
+    },
+
+    /** [PUT]: /order */
+    processUpdateTransaction: async (req, res) => {
+
+    },
 };

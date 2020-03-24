@@ -19,6 +19,10 @@ module.exports = {
                     type: Sequelize.BOOLEAN,
                     defaultValue: false,
                 },
+                status_pengerjaan: {
+                    type: Sequelize.STRING,
+                    defaultValue: "ON PROGGRESS",
+                },
                 id_user: {
                     type: Sequelize.STRING,
                     references: {

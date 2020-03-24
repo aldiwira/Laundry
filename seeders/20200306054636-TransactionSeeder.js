@@ -21,7 +21,8 @@ module.exports = {
               total_tagihan: tagihan,
               pembayaran: pembayaran,
               status_pembayaran: status,
-              id_user: faker.random.arrayElement(users)
+              status_pengerjaan: faker.random.arrayElement(['MENUNGGU', 'SUDAH DIAMBIL', 'ON PROGGRESS', 'DONE']),
+              id_user: faker.random.arrayElement(users),
           });
       }
 

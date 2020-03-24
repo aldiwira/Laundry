@@ -7,8 +7,8 @@ module.exports = {
       .findAll()
       .then(datas => {
         const message = "Success Load Data Price";
-        res.status(response.CODE_UNAUTHORIZED)
-            .json(response.set(response.CODE_UNAUTHORIZED, message, datas));
+        res.status(response.CODE_SUCCESS)
+            .json(response.set(response.CODE_SUCCESS, message, datas));
       })
       .catch(err => {
         const message = "Success Load Data Price";

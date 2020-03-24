@@ -57,12 +57,13 @@ module.exports = {
    * @returns {Promise<void>}
    */
   processRegisterAccount: async (req, res) => {
+    const password = bcrypt.hashSync(req.body.password,10);
     await usersModel
       .create({
         id_user: uniqid.time(),
         nama: req.body.nama,
         no_handphone: req.body.no_handphone,
-        password: req.body.password,
+        password: password,
         alamat: req.body.alamat,
         role: 0
       })
