@@ -13,6 +13,7 @@ let message;
 transactionModel.hasMany(detailTransaction, { foreignKey: "no_nota" });
 detailTransaction.belongsTo(transactionModel);
 module.exports = {
+  //Select Join between trasaction and detail transaction
   processFetchTransaction: async (req, res) => {
     const price = [{ model: priceModel, attributes: ["kelas"] }];
     const transactionDetail = [
@@ -39,26 +40,33 @@ module.exports = {
       });
     res.status(code).send(response.set(code, message, data));
   },
-  //Create transaction but just one id_harga
+  //Make order with multiple id price
+  //Price ID must as array json
   processCreateTransaction: async (req, res) => {
     let id_detail_transaction = uniqid.time();
     let no_nota = uniqid.time();
     let id_harga = req.body.id_harga;
     let id_user = req.body.id_user;
-    transactionModel
+    const price_data = [];
+    for (let index = 0; index < id_harga.length; index++) {
+      let id_harga_now = id_harga[index];
+      price_data.push({
+        bobot: 0,
+        status: false,
+        no_nota,
+        id_harga: id_harga_now
+      });
+    }
+    console.log(price_data);
+    await transactionModel
       .create(
         {
           no_nota,
           total_tagihan: 0,
           pembayaran: 0,
           status_pembayaran: 0,
-          id_user,
-          detail_transactions: {
-            bobot: 0,
-            status: false,
-            no_nota,
-            id_harga
-          }
+          id_user: id_user,
+          detail_transactions: price_data
         },
         {
           include: [detailTransaction]
@@ -68,13 +76,12 @@ module.exports = {
         code = response.CODE_SUCCESS;
         message = "Success Create Order";
         data = datas;
-        res.status(code).json(response.set(code, message, data));
       })
-      .then(err => {
+      .catch(err => {
         code = response.CODE_FAILURE;
         message = "Failed Create Order";
         data = err;
-        res.status(code).json(response.set(code, message, data));
       });
+    res.status(code).send(response.set(code, message, data));
   }
 };
