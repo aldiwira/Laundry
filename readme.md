@@ -50,5 +50,5 @@ $ node_modules/.bin/sequelize db:seed:undo:all
 ## Contributors
 
 - :boy: [@aldiwira](https://github.com/aldiwira)
-- :boy: [@febrian]()
+- :boy: [@febrian](https://github.com/febrianawandap13)
 - :boy: [@hattamaulana](https://github.com/hattamaulana)
