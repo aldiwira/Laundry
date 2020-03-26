@@ -7,6 +7,7 @@ const uniqid = require("uniqid");
 let code;
 let data;
 let message;
+let SaltRound = 10;
 
 module.exports = {
   /**
@@ -41,6 +42,7 @@ module.exports = {
           } else {
             code = response.CODE_UNAUTHORIZED;
             message = "Password Salah, Silahkan Ulangi Lagi";
+            data = [];
           }
         }
         res.status(code).json(response.set(code, message, data));
@@ -55,25 +57,39 @@ module.exports = {
    * @returns {Promise<void>}
    */
   processRegisterAccount: async (req, res) => {
-    await usersModel
-      .create({
-        id_user: uniqid.time(),
-        nama: req.body.nama,
-        no_handphone: req.body.no_handphone,
-        password: req.body.password,
-        alamat: req.body.alamat,
-        role: 0
-      })
-      .then(datas => {
-        code = response.CODE_SUCCESS;
-        message = "Success Create New Account";
-        data = datas;
-      })
-      .catch(err => {
-        code = response.CODE_FAILURE;
-        message = "Failed Create New Account";
-        data = err;
-      });
+    let password_hash = bcrypt.hashSync(req.body.password, SaltRound);
+    const validator = await usersModel.findOne({
+      where: {
+        no_handphone: {
+          [Op.like]: "%" + req.body.no_handphone.trim()
+        }
+      }
+    });
+    if (validator) {
+      code = response.CODE_FAILURE;
+      message = "Failed Create New Account";
+      data = [];
+    } else {
+      await usersModel
+        .create({
+          id_user: uniqid.time(),
+          nama: req.body.nama,
+          no_handphone: req.body.no_handphone,
+          password: password_hash,
+          alamat: req.body.alamat,
+          role: 0
+        })
+        .then(datas => {
+          code = response.CODE_SUCCESS;
+          message = "Success Create New Account";
+          data = datas;
+        })
+        .catch(err => {
+          code = response.CODE_FAILURE;
+          message = "Failed Create New Account";
+          data = err;
+        });
+    }
     res.status(code).send(response.set(code, message, data));
   },
 
