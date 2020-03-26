@@ -6,6 +6,7 @@ const dotenv = require("dotenv/config");
 const usersRoute = require("./routes/UsersRouter.js");
 const transactionRoute = require("./routes/TransactionRouter.js");
 const priceRoute = require("./routes/PriceRouter.js");
+const statusRoute = require("./routes/StatusRouter.js");
 
 // midleware
 apps.use(express.json());
@@ -39,6 +40,8 @@ apps.get("/", (req, res) => {
 apps.use("/user", usersRoute);
 apps.use("/order", transactionRoute);
 apps.use("/prices", priceRoute);
+apps.use("/status", statusRoute);
+
 //listen port
 apps.listen(process.env.PORT_RUN, () => {
   console.log("http://" + process.env.DB_HOST + ":" + process.env.PORT_RUN);
