@@ -92,7 +92,7 @@ module.exports = {
         code = response.CODE_SUCCESS;
         message = "Success Create Transactions";
         res.status(code)
-            .json(response.set(code, message, ""));
+            .json(response.set(code, message, true));
     },
 
     /** [PUT]: /order/:id_user/:no_nota/?status_pengerjaan=DONE */
@@ -137,13 +137,13 @@ module.exports = {
                 code = response.CODE_SUCCESS;
                 message = "Success Saving Transactions";
                 res.status(code)
-                    .json(response.set(code, message, datas));
+                    .json(response.set(code, message, true));
             })
             .catch(err => {
                 code = response.CODE_FAILURE;
                 message = "Failure Saving Transactions";
                 res.status(code)
-                    .json(response.set(code, message, err));
+                    .json(response.set(code, message, false));
             });
     },
 
