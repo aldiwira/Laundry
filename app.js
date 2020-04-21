@@ -1,12 +1,10 @@
 const express = require("express");
 const apps = express();
 const bodyparse = require("body-parser");
-const conectionData = require("./config/db");
-const dotenv = require("dotenv/config");
 const usersRoute = require("./routes/UsersRouter.js");
 const transactionRoute = require("./routes/TransactionRouter.js");
 const priceRoute = require("./routes/PriceRouter.js");
-const statusRoute = require('./routes/StatusRoute');
+const adminRoute = require('./routes/AdminRouter');
 
 // midleware
 apps.use(express.json());
@@ -36,10 +34,13 @@ apps.get("/", (req, res) => {
     Message: "Welcome To DeLaundry"
   });
 });
+
 //endpoint users
 apps.use("/user", usersRoute);
 apps.use("/order", transactionRoute);
 apps.use("/prices", priceRoute);
+apps.use('/admin', adminRoute)
+
 //listen port
 apps.listen(process.env.PORT_RUN, () => {
   console.log("http://" + process.env.DB_HOST + ":" + process.env.PORT_RUN);

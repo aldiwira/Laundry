@@ -1,7 +1,6 @@
 "use strict";
 const Sequelize = require("sequelize");
 const sequelize = require("../config/db");
-const dotenv = require("dotenv/config");
 
 const DetailTransactionModel = sequelize.define(
   "detail_transactions",

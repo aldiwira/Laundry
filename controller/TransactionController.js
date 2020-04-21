@@ -1,6 +1,7 @@
 const uniqid = require("uniqid");
 const { Op } = require("sequelize");
 const response = require('./response');
+const userModel = require("../models/UsersModel");
 const transactionModel = require("../models/TransactionModel.js");
 const detailTransaction = require("../models/DetailTransactionModels.js");
 
@@ -15,9 +16,39 @@ const constraint = {
     where: {}
 };
 
+transactionModel.belongsTo(userModel, { foreignKey: "id_user" })
 transactionModel.hasMany(detailTransaction, { foreignKey: "no_nota" });
 
+
 module.exports = {
+
+    /** Load new Transaction /admin/new */
+    fetchNewOrder: async(req, res) => {
+        const _constraint = constraint;
+        _constraint.attributes.push("status_pengerjaan");
+        _constraint.include.push({
+            model: userModel,
+            attributes: ['nama', 'alamat']
+        });
+        _constraint.where = {
+            status_pengerjaan: 'MENUNGGU',
+        };
+
+        await transactionModel
+            .findAll(_constraint)
+            .then(datas => {
+                code = response.CODE_SUCCESS;
+                message = "Success Load New Transaction";
+                res.status(code)
+                   .json(response.set(code, message, datas));
+            })
+            .catch(err => {
+                code = response.CODE_FAILURE;
+                message = "Failure Load Transactions";
+                res.status(code)
+                   .json(response.set(code, message, err));
+            })
+    },
 
     /** [GET] : /order/:id_user/status */
     fetchStatus: async (req, res) => {
@@ -49,7 +80,6 @@ module.exports = {
     /** [GET] : /order/:id_user/history */
     fetchHistory: async (req, res) => {
         const _constraint = constraint;
-        _constraint.attributes.pop("status_pengerjaan");
         _constraint.where = {
             id_user: req.params.id_user,
             status_pengerjaan: 'DONE',

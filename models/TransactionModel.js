@@ -1,6 +1,5 @@
 const Sequelize = require("sequelize");
 const sequelize = require("../config/db");
-const dotenv = require("dotenv/config");
 
 module.exports = sequelize.define(
     "transactions", {
