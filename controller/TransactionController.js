@@ -19,11 +19,19 @@ const constraint = {
 transactionModel.belongsTo(userModel, { foreignKey: "id_user" })
 transactionModel.hasMany(detailTransaction, { foreignKey: "no_nota" });
 
-
 module.exports = {
 
-    /** Load new Transaction /admin/new */
-    fetchNewOrder: async(req, res) => {
+    /** [GET] : /admin/order/new */
+    fetchStatusOrder: async(req, res) => {
+        var status;
+        if (req.params.status == 'new') {
+            status = 'MENUNGGU';
+        } else if (req.params.status == 'on_proggress') {
+            status = 'ON PROGGRESS';
+        } else if (req.params.status == 'history') {
+            status = 'DONE';
+        }
+
         const _constraint = constraint;
         _constraint.attributes.push("status_pengerjaan");
         _constraint.include.push({
@@ -31,7 +39,7 @@ module.exports = {
             attributes: ['nama', 'alamat']
         });
         _constraint.where = {
-            status_pengerjaan: 'MENUNGGU',
+            'status_pengerjaan': status
         };
 
         await transactionModel
@@ -125,16 +133,14 @@ module.exports = {
             .json(response.set(code, message, true));
     },
 
-    /** [PUT]: /order/:id_user/:no_nota/?status_pengerjaan=DONE */
+    /** [PUT]: /admin/order/:no_nota/?status_pengerjaan=DONE */
     updateTransaction: async (req, res) => {
         const transaction = await transactionModel.findAll({
             where: req.params
         });
 
-        console.log(transaction[0]);
-
         transaction[0]
-            .status_pengerjaan = req.query.status_pengerjaan;
+            .status_pengerjaan = req.body.status_pengerjaan;
 
         await transaction[0]
             .save()
@@ -142,13 +148,13 @@ module.exports = {
                 code = response.CODE_SUCCESS;
                 message = "Success Saving Transactions";
                 res.status(code)
-                    .json(response.set(code, message, datas));
+                   .json(response.set(code, message, true));
             })
             .catch(err => {
                 code = response.CODE_FAILURE;
                 message = "Failure Saving Transactions";
                 res.status(code)
-                    .json(response.set(code, message, err));
+                   .json(response.set(code, message, err));
             });
     },
 
@@ -177,7 +183,7 @@ module.exports = {
             });
     },
 
-    /** [PUT]: /order/status/:id_detail_transactions?status=true/false */
+    /** [PUT]: /admin/order/status/:id_detail_transactions?status=true/false */
     updateStatus: async (req, res) => {
         const transaction = await detailTransaction.findAll({
             where: req.params

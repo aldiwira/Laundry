@@ -1,10 +1,10 @@
 const express = require("express");
+const userController = require("../controller/UsersController");
+const transactionControl = require("../controller/TransactionController");
 const router = express.Router();
-const userController = require("../controller/UsersController.js");
-const transactionControl = require("../controller/TransactionController.js");
 
 router.post("/login", userController.processFetchAdmin);
-router.get("/order/new", transactionControl.fetchNewOrder);
-router.put("/order/update/:no_nota", transactionControl.fetchNewOrder);
+router.get("/order/status/:status", transactionControl.fetchStatusOrder);
+router.put("/order/:no_nota", transactionControl.updateTransaction);
 
 module.exports = router;
