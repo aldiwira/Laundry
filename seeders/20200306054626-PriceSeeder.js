@@ -1,29 +1,27 @@
 'use strict';
 
-var faker = require("faker");
-faker.locale = "en_IND";
+const faker = require("faker");
 
-module.exports = {
-  up: (queryInterface, Sequelize) => {
-        var data = [];
+function up (queryInterface, _) {
+    const bulkQuery = [];
+    const data = {
+        'REGULER': ['CUCI SELIMUT', 'CUCI BIASA', 'RAPI BERSIH'],
+        'EXPRESS': ['DUA JAM', 'SEHARI']
+    };
 
-        for (let i = 1; i <= 5; i++) {
-            data.push({
-                kelas: faker.random.arrayElement(['REGULER', 'EXPRESS']),
-                tipe: faker.random.arrayElement(['CUCI SELIMUT', 'CUCI BIASA', 'DUA JAM', 'SEHARI', 'RAPI BERSIH']),
-                harga: faker.commerce.price(5000, 20000)
-            });
-        }
+    for (const key in data) {
+        data[key].forEach(res => bulkQuery.push({
+            kelas: key,
+            tipe: res,
+            harga: faker.commerce.price(5000, 20000)
+        }))
+    }
 
-        return queryInterface.bulkInsert('prices', data, {});
-  },
+    return queryInterface.bulkInsert('prices', bulkQuery, {});
+}
 
-  down: (queryInterface, Sequelize) => {
-    /*
-      Add reverting commands here.
-      Return a promise to correctly handle asynchronicity.
+function down (queryInterface, _) {
+    return queryInterface.bulkDelete('prices', null, {});
+}
 
-      Example: */
-      return queryInterface.bulkDelete('prices', null, {});
-  }
-};
+module.exports = { up, down };

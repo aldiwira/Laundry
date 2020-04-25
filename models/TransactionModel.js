@@ -1,28 +1,34 @@
-const Sequelize = require("sequelize");
-const sequelize = require("../config/db");
+'use strict';
 
-module.exports = sequelize.define(
+import { STRING, INTEGER, BOOLEAN, literal } from "sequelize";
+import { define } from "../config/db";
+
+module.exports = define(
     "transactions", {
-        no_nota: {
-            type: Sequelize.STRING,
+        noNota: {
+            type: STRING,
             primaryKey: true
         },
-        total_tagihan: {
-            type: Sequelize.INTEGER
+        totalTagihan: {
+            type: INTEGER
         },
         pembayaran: {
-            type: Sequelize.INTEGER
+            type: INTEGER
         },
-        status_pembayaran: {
-            type: Sequelize.BOOLEAN,
+        statusPembayaran: {
+            type: BOOLEAN,
             defaultValue: false
         },
-        status_pengerjaan: {
-            type: Sequelize.STRING,
+        statusPengerjaan: {
+            type: STRING,
             defaultValue: "MENUNGGU"
         },
-        id_user: {
-            type: Sequelize.STRING,
+        methodeDelivery: {
+            type: STRING,
+            allowNull: false
+        },
+        idUser: {
+            type: STRING,
             references: {
                 model: "users",
                 key: "id_user"
@@ -30,12 +36,12 @@ module.exports = sequelize.define(
         },
         createdAt: {
             type: "TIMESTAMP",
-            defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
+            defaultValue: literal("CURRENT_TIMESTAMP"),
             allowNull: false
         },
         updatedAt: {
             type: "TIMESTAMP",
-            defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
+            defaultValue: literal("CURRENT_TIMESTAMP"),
             allowNull: false
         }
     },

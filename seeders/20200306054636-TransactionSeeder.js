@@ -1,40 +1,36 @@
 'use strict';
 
-var faker = require("faker");
-faker.locale = "en_IND";
+const faker = require("faker");
 
-module.exports = {
-  up: async (queryInterface, Sequelize) => {
-      const result = await queryInterface.sequelize.query(`SELECT id_user FROM users;`);
+async function up (queryInterface, _) {
+    faker.locale = "id_ID";
 
-      var users = [];
-      result[0].forEach(res => users.push(res.id_user));
+    const bulkQuery = [];
+    const users = [];
+    const result = await queryInterface.sequelize.query(`SELECT idUser FROM users;`);
+    result[0].forEach(res => users.push(res.id_user));
 
-      var data = [];
-      for (let i = 1; i <= 25; i++) {
-          const tagihan = faker.commerce.price(5000, 100000);
-          const status = faker.random.boolean();
-          const pembayaran = (status) ? tagihan : faker.commerce.price(5000, tagihan);
+    for (let i = 1; i <= 50; i++) {
+        const tagihan = faker.commerce.price(5000, 100000);
+        const status = faker.random.boolean();
+        const pembayaran = (status) ? tagihan : faker.commerce.price(5000, tagihan);
 
-          data.push({
-              no_nota: faker.internet.password(10),
-              total_tagihan: tagihan,
-              pembayaran: pembayaran,
-              status_pembayaran: status,
-              status_pengerjaan: faker.random.arrayElement(['MENUNGGU', 'SUDAH DIAMBIL', 'ON PROGGRESS', 'DONE']),
-              id_user: faker.random.arrayElement(users),
-          });
-      }
+        bulkQuery.push({
+            noNota: faker.internet.password(10),
+            totalTagihan: tagihan,
+            pembayaran: pembayaran,
+            statusPembayaran: status,
+            statusPengerjaan: faker.random.arrayElement(['MENUNGGU', 'SUDAH DIAMBIL', 'ON PROGGRESS', 'DONE']),
+            methodeDelivery: faker.random.arrayElement(['ANTAR-JEMPUT', 'DATANG KE TOKO']),
+            idUser: faker.random.arrayElement(users),
+        });
+    }
 
-      return queryInterface.bulkInsert('transactions', data, {});
-  },
+    return queryInterface.bulkInsert('transactions', bulkQuery, {});
+}
 
-  down: (queryInterface, Sequelize) => {
-    /*
-      Add reverting commands here.
-      Return a promise to correctly handle asynchronicity.
+function down (queryInterface, _) {
+    return queryInterface.bulkDelete('transactions', null, {});
+}
 
-      Example: */
-      return queryInterface.bulkDelete('transactions', null, {});
-  }
-};
+module.exports = { up, down };

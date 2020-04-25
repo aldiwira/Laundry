@@ -1,43 +1,42 @@
-const Sequelize = require("sequelize");
-const sequelize = require("../config/db");
-const dotenv = require("dotenv/config");
-const users = sequelize.define(
-  "users",
-  {
-    id_user: {
-      type: Sequelize.STRING,
-      primaryKey: true
+"use strict";
+
+import { STRING, SMALLINT, literal } from "sequelize";
+import { define } from "../config/db";
+
+module.exports = define("users", {
+    idUser: {
+        type: STRING,
+        primaryKey: true
     },
     nama: {
-      type: Sequelize.STRING
+        type: STRING
     },
-    no_handphone: {
-      type: Sequelize.STRING
+    noHp: {
+        type: STRING
     },
     password: {
-      type: Sequelize.STRING
+        type: STRING
     },
     alamat: {
-      type: Sequelize.STRING
+        type: STRING
     },
-    role: {
-      type: Sequelize.SMALLINT
+    peran: {
+        type: SMALLINT,
+        defaultValue: 0
     },
     createdAt: {
-      type: "TIMESTAMP",
-      defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
-      allowNull: false
+        type: "TIMESTAMP",
+        defaultValue: literal("CURRENT_TIMESTAMP"),
+        allowNull: false
     },
     updatedAt: {
-      type: "TIMESTAMP",
-      defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
-      allowNull: false
+        type: "TIMESTAMP",
+        defaultValue: literal("CURRENT_TIMESTAMP"),
+        allowNull: false
     }
-  },
-  {
-    timestamps: process.env.TIMESTAMPS,
-    freezeTableName: true
-  }
+},
+    {
+        timestamps: process.env.TIMESTAMPS,
+        freezeTableName: true
+    }
 );
-
-module.exports = users;
