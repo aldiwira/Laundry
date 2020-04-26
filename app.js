@@ -1,16 +1,16 @@
 const express = require("express");
 const bodyparse = require("body-parser");
 const usersRoute = require("./routes/UsersRouter.js");
-const transactionRoute = require("./routes/TransactionRouter.js");
-const priceRoute = require("./routes/PriceRouter.js");
 const adminRoute = require('./routes/AdminRouter');
+const priceRoute = require("./routes/PriceRouter.js");
+const orderRoute = require("./routes/OrderRouter.js");
 const env = require("./config/config.json")[process.env.NODE_ENV];
 
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(bodyparse.json());
-app.use(function (req, res, next) {
+app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
     res.header(
         "Access-Control-Allow-Methods",
@@ -33,9 +33,9 @@ app.get("/", (req, res) => {
     });
 });
 app.use("/user", usersRoute);
-app.use("/order", transactionRoute);
 app.use("/prices", priceRoute);
 app.use('/admin', adminRoute);
+app.use("/order", orderRoute);
 if (process.env.NODE_ENV === 'production') {
     app.listen(process.env.NODE_PORT || 80);
 } else {

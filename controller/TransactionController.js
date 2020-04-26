@@ -3,26 +3,49 @@ const { Op } = require("sequelize");
 const response = require('./response');
 const userModel = require("../models/UsersModel");
 const transactionModel = require("../models/TransactionModel.js");
-const detailTransaction = require("../models/DetailTransactionModels.js");
+const detailTransaction = require("../models/DetailTransactionModel.js");
 
 let code;
 let message;
 const constraint = {
-    attributes: ["no_nota", "status_pembayaran", "createdAt", "updatedAt"],
+    attributes: ["noNota", "statusPembayaran", "createdAt", "updatedAt"],
     include: [{
         model: detailTransaction,
-        attributes: ["status", "bobot", "id_harga"]
+        attributes: ["id", "status", "bobot", "idHarga"]
     }],
     where: {}
 };
 
-transactionModel.belongsTo(userModel, { foreignKey: "id_user" })
-transactionModel.hasMany(detailTransaction, { foreignKey: "no_nota" });
+transactionModel.belongsTo(userModel, { foreignKey: "idUser" })
+transactionModel.hasMany(detailTransaction, { foreignKey: "noNota" });
 
 module.exports = {
 
-    /** [GET] : /admin/order/new */
-    fetchStatusOrder: async(req, res) => {
+    /** [USER][POST]: /order
+     * Format Request : JSON :
+     * id_user: "",
+     * id_harga: []
+     * */
+    processCreateTransaction: async function (req, res) {
+        const no_nota = uniqid.time();
+        await transactionModel.create({
+            noNota: no_nota,
+            idUser: req.body.id_user,
+            methodeDelivery: req.body.methodeDelivery
+        });
+        await req.body.id_harga.forEach(price => detailTransaction.create({
+            idUser: price,
+            noNota: no_nota,
+        }));
+
+        code = response.CODE_SUCCESS;
+        message = "Success Create Transactions";
+        res.status(code)
+            .json(response.set(code, message, true));
+    },
+
+    /** [ADMIN][GET] : /admin/order/new */
+    fetchStatusOrder: async function (req, res) {
         var status;
         if (req.params.status == 'new') {
             status = 'MENUNGGU';
@@ -33,13 +56,13 @@ module.exports = {
         }
 
         const _constraint = constraint;
-        _constraint.attributes.push("status_pengerjaan");
+        _constraint.attributes.push("statusPengerjaan");
         _constraint.include.push({
             model: userModel,
             attributes: ['nama', 'alamat']
         });
         _constraint.where = {
-            'status_pengerjaan': status
+            'statusPengerjaan': status
         };
 
         await transactionModel
@@ -58,14 +81,14 @@ module.exports = {
             })
     },
 
-    /** [GET] : /order/:id_user/status */
-    fetchStatus: async (req, res) => {
+    /** [USER][GET] : /order/:id_user/status */
+    fetchStatus: async function (req, res) {
         const _constraint = constraint;
-        _constraint.attributes.push("status_pengerjaan");
+        _constraint.attributes.push("statusPengerjaan");
         _constraint.where = {
-            id_user: req.params.id_user,
+            idUser: req.params.idUser,
             [Op.not]: {
-                status_pengerjaan: 'DONE'
+                statusPengerjaan: 'DONE'
             }
         };
 
@@ -73,74 +96,52 @@ module.exports = {
             .findAll(_constraint)
             .then(datas => {
                 code = response.CODE_SUCCESS;
-                message = "Success Load Transactions";
+                message = "Berhasil Load Data Order";
                 res.status(code)
                     .json(response.set(code, message, datas));
             })
             .catch(err => {
                 code = response.CODE_FAILURE;
-                message = "Failure Load Transactions";
+                message = "Gagal Load Data Order";
                 res.status(code)
                     .json(response.set(code, message, err));
             })
     },
 
-    /** [GET] : /order/:id_user/history */
-    fetchHistory: async (req, res) => {
+    /** [USER][GET] : /order/:id_user/history */
+    fetchHistory: async function (req, res) {
         const _constraint = constraint;
         _constraint.where = {
-            id_user: req.params.id_user,
-            status_pengerjaan: 'DONE',
+            idUser: req.params.idUser,
+            statusPengerjaan: 'DONE',
         };
 
         await transactionModel
             .findAll(_constraint)
             .then(datas => {
                 code = response.CODE_SUCCESS;
-                message = "Success Load Transactions";
+                message = "Berhasil Load Data History";
                 res.status(code)
-                    .json(response.set(code, message, datas));
+                   .json(response.set(code, message, datas));
             })
             .catch(err => {
                 code = response.CODE_FAILURE;
-                message = "Failure Load Transactions";
+                message = "Gagal Load Data History";
                 res.status(code)
-                    .json(response.set(code, message, err));
+                   .json(response.set(code, message, err));
             })
     },
 
-    /** [POST]: /order
-     * Format Request : JSON :
-     * id_user: "",
-     * id_harga: []
-     * */
-    processCreateTransaction: async (req, res) => {
-        const no_nota = uniqid.time();
-
-        await transactionModel.create({
-            no_nota: no_nota,
-            id_user: req.body.id_user
-        });
-
-        await req.body.id_harga.forEach(price => detailTransaction.create({
-            id_harga: price,
-            no_nota: no_nota,
-        }));
-
-        code = response.CODE_SUCCESS;
-        message = "Success Create Transactions";
-        res.status(code)
-            .json(response.set(code, message, true));
-    },
-
-    /** [PUT]: /admin/order/:no_nota/?status_pengerjaan=DONE */
+    /** [ADMIN][PUT]: /admin/order/:noNota/ *
+     * DATA: 
+     * - status_pengerjaan={ON PROGGRESS, DONE} */
     updateTransaction: async (req, res) => {
         const transaction = await transactionModel.findAll({
             where: req.params
         });
 
         transaction[0]
-            .status_pengerjaan = req.body.status_pengerjaan;
+            .statusPengerjaan = req.body.statusPengerjaan;
 
         await transaction[0]
             .save()
@@ -158,24 +159,28 @@ module.exports = {
             });
     },
 
-    /** [PUT]: /order/:id_user/:no_nota/?status_pembayaran=0&pembayaran=1000*/
-    updatePayment: async (req, res) => {
-        const transaction = await transactionModel.findAll({
+    /** [ADMIN][PUT]: /order/:no_nota
+     * DATA :
+     * - statusPembayaran=0
+     * - pembayaran=1000
+     **/
+    updatePayment: async function (req, res) {
+        const transaction = await transactionModel.findOne({
             where: req.params
         });
 
-        transaction[0].status_pembayaran = req.query.status_pembayaran;
-        transaction[0].pembayaran = req.query.pembayaran;
+        transaction.statusPembayaran = true;
+        transaction.pembayaran = req.query.pembayaran;
 
-        await transaction[0]
+        await transaction
             .save()
-            .then(datas => {
+            .then(_ => {
                 code = response.CODE_SUCCESS;
                 message = "Success Saving Transactions";
                 res.status(code)
                     .json(response.set(code, message, true));
             })
-            .catch(err => {
+            .catch(_ => {
                 code = response.CODE_FAILURE;
                 message = "Failure Saving Transactions";
                 res.status(code)
@@ -183,28 +188,27 @@ module.exports = {
             });
     },
 
-    /** [PUT]: /admin/order/status/:id_detail_transactions?status=true/false */
-    updateStatus: async (req, res) => {
-        const transaction = await detailTransaction.findAll({
+    /** [PUT]: /admin/order/status/:id */
+    updateStatusPerItem: async (req, res) => {
+        const transaction = await detailTransaction.findOne({
             where: req.params
         });
 
-        transaction[0]
-            .status = req.query.status;
+        transaction.status = true;
 
-        await transaction[0]
+        await transaction
             .save()
-            .then(datas => {
+            .then(_ => {
                 code = response.CODE_SUCCESS;
-                message = "Success Load Transactions";
+                message = "Berhasil Mengupdate data.";
                 res.status(code)
-                    .json(response.set(code, message, datas));
+                    .json(response.set(code, message, true));
             })
-            .catch(err => {
+            .catch(_ => {
                 code = response.CODE_FAILURE;
-                message = "Failure Load Transactions";
+                message = "Gagal mengupdate data.";
                 res.status(code)
-                    .json(response.set(code, message, err));
+                    .json(response.set(code, message, false));
             });
     },
 };

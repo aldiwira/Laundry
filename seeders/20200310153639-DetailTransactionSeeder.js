@@ -8,10 +8,10 @@ async function up (queryInterface, _) {
     const priceRows = await queryInterface.sequelize.query(`SELECT idHarga FROM prices;`);
 
     let transactions = [];
-    transactionRows[0].forEach(res => transactions.push(res.no_nota));
+    transactionRows[0].forEach(res => transactions.push(res.noNota));
 
     let prices = [];
-    priceRows[0].forEach(res => prices.push(res.id_harga));
+    priceRows[0].forEach(res => prices.push(res.idHarga));
 
     let bulkQuery = [];
     for (let i = 1; i <= 100; i++) {

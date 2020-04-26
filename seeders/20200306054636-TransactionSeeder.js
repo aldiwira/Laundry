@@ -8,7 +8,7 @@ async function up (queryInterface, _) {
     const bulkQuery = [];
     const users = [];
     const result = await queryInterface.sequelize.query(`SELECT idUser FROM users;`);
-    result[0].forEach(res => users.push(res.id_user));
+    result[0].forEach(res => users.push(res.idUser));
 
     for (let i = 1; i <= 50; i++) {
         const tagihan = faker.commerce.price(5000, 100000);

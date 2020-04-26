@@ -6,28 +6,29 @@ module.exports = {
     await priceModel
       .findAll()
       .then(datas => {
-        const message = "Success Load Data Price";
+        const message = "Berhasil Load Data Harga";
         res.status(response.CODE_SUCCESS)
             .json(response.set(response.CODE_SUCCESS, message, datas));
       })
       .catch(err => {
-        const message = "Success Load Data Price";
+        const message = "Gagal Load Data Harga";
         res.status(response.CODE_FAILURE)
             .json(response.set(response.CODE_FAILURE, message, null));
       });
   },
+
   carryPriceData: async (req, res) => {
     await priceModel
-      .create({
-        kelas: req.body.kelas,
-        tipe: req.body.tipe,
-        harga: req.body.harga
-      })
+      .create(req.body)
       .then(datas => {
         res.status(200).json(datas);
       })
       .catch(err => {
         res.status(401).json(err);
       });
-  }
+  },
+
+  update: async function (req, res) {
+        // TODO : Logic Update Data.
+    }
 };

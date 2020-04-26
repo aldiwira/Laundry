@@ -1,35 +1,36 @@
 "use strict";
 
 module.exports = {
-    up: (queryInterface, Sequelize) => {
+    up: (queryInterface, dataType) => {
         return queryInterface.createTable("users", {
             idUser: {
-                type: Sequelize.STRING,
+                type: dataType.STRING,
                 primaryKey: true
             },
             nama: {
-                type: Sequelize.STRING
+                type: dataType.STRING
             },
             noHp: {
-                type: Sequelize.STRING
+                type: dataType.STRING
             },
             password: {
-                type: Sequelize.STRING
+                type: dataType.STRING
             },
             alamat: {
-                type: Sequelize.STRING
+                type: dataType.TEXT
             },
             peran: {
-                type: Sequelize.SMALLINT
+                type: dataType.SMALLINT,
+                defaultValue: 0
             },
             createdAt: {
                 type: "TIMESTAMP",
-                defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
+                defaultValue: dataType.literal("CURRENT_TIMESTAMP"),
                 allowNull: false
             },
             updatedAt: {
                 type: "TIMESTAMP",
-                defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
+                defaultValue: dataType.literal("CURRENT_TIMESTAMP"),
                 allowNull: false
             }
         }, {

@@ -1,6 +1,6 @@
 const response = require('./response');
 const transactionModel = require("../models/TransactionModel");
-const detailTransaction = require("../models/DetailTransactionModels");
+const detailTransaction = require("../models/DetailTransactionModel");
 
 let code;
 let message;
