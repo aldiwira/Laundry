@@ -1,37 +1,37 @@
 "use strict";
 
-import { STRING, SMALLINT, literal } from "sequelize";
-import { define } from "../config/db";
+const sequelize = require('sequelize');
+const db = require('../config/db');
 
-module.exports = define("users", {
+module.exports = db.define("users", {
     idUser: {
-        type: STRING,
+        type: sequelize.STRING,
         primaryKey: true
     },
     nama: {
-        type: STRING
+        type: sequelize.STRING
     },
     noHp: {
-        type: STRING
+        type: sequelize.STRING
     },
     password: {
-        type: STRING
+        type: sequelize.STRING
     },
     alamat: {
-        type: STRING
+        type: sequelize.STRING
     },
     peran: {
-        type: SMALLINT,
+        type: sequelize.SMALLINT,
         defaultValue: 0
     },
     createdAt: {
         type: "TIMESTAMP",
-        defaultValue: literal("CURRENT_TIMESTAMP"),
+        defaultValue: sequelize.literal("CURRENT_TIMESTAMP"),
         allowNull: false
     },
     updatedAt: {
         type: "TIMESTAMP",
-        defaultValue: literal("CURRENT_TIMESTAMP"),
+        defaultValue: sequelize.literal("CURRENT_TIMESTAMP"),
         allowNull: false
     }
 },

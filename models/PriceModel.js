@@ -1,22 +1,22 @@
 'use strict';
 
-import { INTEGER, STRING } from "sequelize";
-import { define } from "../config/db";
+const sequelize = require('sequelize');
+const db = require('../config/db');
 
-module.exports = define("prices", {
+module.exports = db.define("prices", {
     idHarga: {
-        type: INTEGER,
+        type: sequelize.INTEGER,
         primaryKey: true,
         autoIncrement: true
     },
     kelas: {
-        type: STRING
+        type: sequelize.STRING
     },
     tipe: {
-        type: STRING
+        type: sequelize.STRING
     },
     harga: {
-        type: INTEGER
+        type: sequelize.INTEGER
     }
 },
     {
