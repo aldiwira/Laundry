@@ -16,21 +16,17 @@ module.exports = {
    * antara input yang dikirimkan user dan data yang terdapat pada database, seperti :
    * - Checking no handphone sudah terdaftar atau belum.
    * - Password menggunakan enkripsi dengan menggunakan password hashing function yaitu bcrypt.
-   *
-   * @param req
-   * @param res
-   * @returns {Promise<void>}
    */
   processFetchUserDatas: async (req, res) => {
     await usersModel
       .findOne({
         where: {
-          no_handphone: {
-            [Op.like]: "%" + req.body.no_handphone.trim()
-          }
-        }
+          noHp: {
+            [Op.like]: "%" + req.body.noHp.trim(),
+          },
+        },
       })
-      .then(datas => {
+      .then((datas) => {
         if (datas == null) {
           code = response.CODE_UNAUTHORIZED;
           message = "No Handphone Tidak Dikenali";
@@ -42,55 +38,71 @@ module.exports = {
           } else {
             code = response.CODE_UNAUTHORIZED;
             message = "Password Salah, Silahkan Ulangi Lagi";
-            data = [];
+            data = {};
           }
         }
-        res.status(code).json(response.set(code, message, data));
+        res.status(200).json(response.set(code, message, data));
+      });
+  },
+
+  /**
+   * Controller untuk login admin laundry.
+   *
+   * Dimana perbedaan dari login user dan admin
+   * hanya berada pada kondisi where clause saat fetching data.
+   */
+  processFetchAdmin: async (req, res) => {
+    await usersModel
+      .findOne({
+        where: {
+          peran: 1,
+          noHp: {
+            [Op.like]: "%" + req.body.noHp.trim(),
+          },
+        },
+      })
+      .then((datas) => {
+        if (datas == null) {
+          code = response.CODE_UNAUTHORIZED;
+          message = "No Handphone Tidak Dikenali";
+        } else {
+          if (bcrypt.compareSync(req.body.password, datas.password)) {
+            code = response.CODE_SUCCESS;
+            message = "Berhasil Login.";
+            data = datas;
+          } else {
+            code = response.CODE_UNAUTHORIZED;
+            message = "Password Salah, Silahkan Ulangi Lagi";
+            data = {};
+          }
+        }
+        res.status(200).json(response.set(code, message, data));
       });
   },
 
   /**
    * Controller untuk melakukan pembuatan akun.
-   *
-   * @param req
-   * @param res
-   * @returns {Promise<void>}
    */
-  processRegisterAccount: async (req, res) => {
-    let password_hash = bcrypt.hashSync(req.body.password, SaltRound);
-    const validator = await usersModel.findOne({
-      where: {
-        no_handphone: {
-          [Op.like]: "%" + req.body.no_handphone.trim()
-        }
-      }
-    });
-    if (validator) {
-      code = response.CODE_FAILURE;
-      message = "Failed Create New Account";
-      data = [];
-    } else {
-      await usersModel
-        .create({
-          id_user: uniqid.time(),
-          nama: req.body.nama,
-          no_handphone: req.body.no_handphone,
-          password: password_hash,
-          alamat: req.body.alamat,
-          role: 0
-        })
-        .then(datas => {
-          code = response.CODE_SUCCESS;
-          message = "Success Create New Account";
-          data = datas;
-        })
-        .catch(err => {
-          code = response.CODE_FAILURE;
-          message = "Failed Create New Account";
-          data = err;
-        });
-    }
-    res.status(code).send(response.set(code, message, data));
+  processRegisterAccount: async function (req, res) {
+    const password = bcrypt.hashSync(req.body.password, 10);
+    await usersModel
+      .create({
+        idUser: uniqid.time(),
+        nama: req.body.nama,
+        noHp: req.body.noHp,
+        password: password,
+        alamat: req.body.alamat,
+      })
+      .then((datas) => {
+        code = response.CODE_SUCCESS;
+        message = "Success Create New Account";
+        res.status(code).json(response.set(code, message, datas));
+      })
+      .catch((err) => {
+        code = response.CODE_FAILURE;
+        message = "Failed Create New Account";
+        res.status(200).json(response.set(code, message, err));
+      });
   },
 
   /**
@@ -98,20 +110,17 @@ module.exports = {
    * Disini dilakukan verifikasi untuk mengecek apakah no handphone
    * yang di daftarkan valid atau tidak dengan mengecek no_handphone ada yang sama atau tidak.
    *
-   * @param req
-   * @param res
-   * @returns {Promise<void>}
    */
   processRegisterPhone: async (req, res) => {
     await usersModel
       .findOne({
         where: {
-          no_handphone: {
-            [Op.like]: "%" + req.body.no_handphone.trim()
-          }
-        }
+          noHp: {
+            [Op.like]: "%" + req.body.noHp.trim(),
+          },
+        },
       })
-      .then(datas => {
+      .then((datas) => {
         if (datas == null) {
           code = response.CODE_SUCCESS;
           message = "No Handphone Valid.";
@@ -120,7 +129,7 @@ module.exports = {
           message = "No Handphone Sudah Terdaftar";
         }
 
-        res.status(code).json(response.set(code, message));
+        res.status(200).json(response.set(code, message));
       });
-  }
+  },
 };

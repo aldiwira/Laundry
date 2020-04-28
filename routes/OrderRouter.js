@@ -1,9 +1,9 @@
 const express = require("express");
-const router = express.Router();
 const transactionControl = require("../controller/TransactionController.js");
 
-router.get("/", transactionControl.processFetchTransaction);
+const router = express.Router();
 router.post("/", transactionControl.processCreateTransaction);
-router.put("/", transactionControl.processChangePaymentStatus);
+router.get("/:idUser/status", transactionControl.fetchStatus);
+router.get("/:idUser/history", transactionControl.fetchHistory);
 
 module.exports = router;

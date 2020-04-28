@@ -1,48 +1,45 @@
 "use strict";
 
 module.exports = {
-  up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable(
-      "users",
-      {
-        id_user: {
-          type: Sequelize.STRING,
-          primaryKey: true
-        },
-        nama: {
-          type: Sequelize.STRING
-        },
-        no_handphone: {
-          type: Sequelize.STRING
-        },
-        password: {
-          type: Sequelize.STRING
-        },
-        alamat: {
-          type: Sequelize.STRING
-        },
-        role: {
-          type: Sequelize.SMALLINT
-        },
-        createdAt: {
-          type: "TIMESTAMP",
-          defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
-          allowNull: false
-        },
-        updatedAt: {
-          type: "TIMESTAMP",
-          defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
-          allowNull: false
-        }
-      },
-      {
-        timestamps: process.env.TIMESTAMPS,
-        freezeTableName: true
-      }
-    );
-  },
+    up: (queryInterface, dataType) => {
+        return queryInterface.createTable("users", {
+            idUser: {
+                type: dataType.STRING,
+                primaryKey: true
+            },
+            nama: {
+                type: dataType.STRING
+            },
+            noHp: {
+                type: dataType.STRING
+            },
+            password: {
+                type: dataType.STRING
+            },
+            alamat: {
+                type: dataType.TEXT
+            },
+            peran: {
+                type: dataType.SMALLINT,
+                defaultValue: 0
+            },
+            createdAt: {
+                type: "TIMESTAMP",
+                defaultValue: dataType.literal("CURRENT_TIMESTAMP"),
+                allowNull: false
+            },
+            updatedAt: {
+                type: "TIMESTAMP",
+                defaultValue: dataType.literal("CURRENT_TIMESTAMP"),
+                allowNull: false
+            }
+        }, {
+            timestamps: process.env.TIMESTAMPS,
+            freezeTableName: true
+        });
+    },
 
-  down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable("users");
-  }
+    down: (queryInterface, _) => {
+        return queryInterface.dropTable("users");
+    }
 };

@@ -1,26 +1,25 @@
-const Sequelize = require("sequelize");
-const sequelize = require("../config/db");
-const Price = sequelize.define(
-  "prices",
-  {
-    id_harga: {
-      type: Sequelize.INTEGER,
-      primaryKey: true,
-      autoIncrement: true
+'use strict';
+
+const sequelize = require('sequelize');
+const db = require('../config/db');
+
+module.exports = db.define("prices", {
+    idHarga: {
+        type: sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
     },
     kelas: {
-      type: Sequelize.STRING
+        type: sequelize.STRING
     },
     tipe: {
-      type: Sequelize.STRING
+        type: sequelize.STRING
     },
     harga: {
-      type: Sequelize.INTEGER
+        type: sequelize.INTEGER
     }
-  },
-  {
-    freezeTableName: true
-  }
+},
+    {
+        freezeTableName: true
+    }
 );
-
-module.exports = Price;
