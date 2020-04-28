@@ -1,42 +1,48 @@
 "use strict";
-module.exports = (sequelize, DataTypes) => {
-  const DetailTransactionModel = sequelize.define(
-    "detail_transactions",
-    {
-      id_detail_transaction: {
-        type: DataTypes.INTEGER,
+
+const sequelize = require('sequelize');
+const db = require('../config/db');
+
+module.exports = db.define(
+    "detail_transactions", {
+    id: {
+        type: sequelize.INTEGER,
         primaryKey: true,
         autoIncrement: true
-      },
-      bobot: {
-        type: DataTypes.INTEGER
-      },
-      status: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: false
-      },
-      createdAt: {
-        type: "TIMESTAMP",
-        defaultValue: DataTypes.literal("CURRENT_TIMESTAMP"),
-        allowNull: false
-      },
-      updatedAt: {
-        type: "TIMESTAMP",
-        defaultValue: DataTypes.literal("CURRENT_TIMESTAMP"),
-        allowNull: false
-      }
     },
-    {
-      timestamps: process.env.TIMESTAMPS,
-      freezeTableName: true
+    bobot: {
+        type: sequelize.INTEGER
+    },
+    status: {
+        type: sequelize.BOOLEAN,
+        defaultValue: false
+    },
+    noNota: {
+        type: sequelize.STRING,
+        references: {
+            model: "transactions",
+            key: "no_nota"
+        }
+    },
+    idHarga: {
+        type: sequelize.INTEGER,
+        references: {
+            model: "prices",
+            key: "id_harga"
+        }
+    },
+    createdAt: {
+        type: "TIMESTAMP",
+        defaultValue: sequelize.literal("CURRENT_TIMESTAMP"),
+        allowNull: false
+    },
+    updatedAt: {
+        type: "TIMESTAMP",
+        defaultValue: sequelize.literal("CURRENT_TIMESTAMP"),
+        allowNull: false
     }
-  );
-
-  DetailTransactionModel.associate = function(models) {
-    // associations can be defined here
-    DetailTransactionModel.hasMany(models.UsersModel, { as: "id_user" });
-    DetailTransactionModel.hasMany(models.PriceModel, { as: "id_harga" });
-    DetailTransactionModel.hasMany(models.TransactionModel, { as: "no_nota" });
-  };
-  return DetailTransactionModel;
-};
+}, {
+    timestamps: process.env.TIMESTAMPS,
+    freezeTableName: true
+}
+);

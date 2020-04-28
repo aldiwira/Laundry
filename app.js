@@ -1,18 +1,16 @@
 const express = require("express");
-const apps = express();
 const bodyparse = require("body-parser");
-const conectionData = require("./config/db");
-const dotenv = require("dotenv/config");
 const usersRoute = require("./routes/UsersRouter.js");
-const transactionRoute = require("./routes/TransactionRouter.js");
+const adminRoute = require("./routes/AdminRouter");
 const priceRoute = require("./routes/PriceRouter.js");
-const statusRoute = require("./routes/StatusRouter.js");
+const orderRoute = require("./routes/OrderRouter.js");
+const env = require("./config/config.json")[process.env.NODE_ENV];
 
-// midleware
-apps.use(express.json());
-apps.use(express.urlencoded({ extended: true }));
-apps.use(bodyparse.json());
-apps.use(function(req, res, next) {
+const app = express();
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(bodyparse.json());
+app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header(
     "Access-Control-Allow-Methods",
@@ -22,27 +20,26 @@ apps.use(function(req, res, next) {
     "Access-Control-Allow-Headers",
     "Content-Type, Authorization, Content-Length, X-Requested-With"
   );
-  // allow preflight
   if (req.method === "OPTIONS") {
     res.send(200);
   } else {
     next();
   }
 });
-//welcome
-apps.get("/", (req, res) => {
+app.get("/", (req, res) => {
   res.status(200).json({
     status: 200,
-    Message: "Welcome To DeLaundry"
+    Message: "Welcome To DeLaundry",
   });
 });
-//endpoint users
-apps.use("/user", usersRoute);
-apps.use("/order", transactionRoute);
-apps.use("/prices", priceRoute);
-apps.use("/status", statusRoute);
-
-//listen port
-apps.listen(process.env.PORT_RUN, () => {
-  console.log("http://" + process.env.DB_HOST + ":" + process.env.PORT_RUN);
-});
+app.use("/user", usersRoute);
+app.use("/prices", priceRoute);
+app.use("/admin", adminRoute);
+app.use("/order", orderRoute);
+if (process.env.NODE_ENV === "production") {
+  app.listen(process.env.NODE_PORT || 80);
+} else {
+  app.listen(process.env.NODE_PORT, () => {
+    console.log("http://" + env.host + ":" + process.env.NODE_PORT);
+  });
+}

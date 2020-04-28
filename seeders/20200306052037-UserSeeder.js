@@ -2,27 +2,27 @@
 
 const faker = require("faker");
 const bcrypt = require("bcrypt");
-faker.locale = "en_IND";
+const uniqid = require("uniqid");
 
-module.exports = {
-  up: (queryInterface, _) => {
-        var data = [];
+function up (queryInterface, _) {
+    faker.locale = "id_ID";
+    let bulkQuery = [];
+    for (let i = 1; i <= 5; i++) {
+        const alamat = faker.address.streetName() + ", " + faker.address.city();
+        bulkQuery.push({
+            idUser: uniqid.time(),
+            nama: faker.name.findName(),
+            noHp: faker.phone.phoneNumber(),
+            password: bcrypt.hashSync("password", 10),
+            alamat: alamat,
+        });
+    }
 
-        for (let i = 1; i <= 5; i++) {
-            data.push({
-                id_user: faker.random.uuid(),
-                nama: faker.name.findName(),
-                no_handphone: faker.phone.phoneNumber(),
-                password: bcrypt.hashSync("password", 10),
-                alamat: faker.address.secondaryAddress(),
-                role: 0
-            });
-        }
+    return queryInterface.bulkInsert('users', bulkQuery, {});
+}
 
-        return queryInterface.bulkInsert('users', data, {});
-  },
+function down (queryInterface, _) {
+    return queryInterface.bulkDelete('users', null, {});
+}
 
-  down: (queryInterface, _) => {
-      return queryInterface.bulkDelete('users', null, {});
-  }
-};
+module.exports = { up, down };

@@ -1,7 +1,8 @@
 const express = require("express");
-const router = express.Router();
 const priceController = require("../controller/PriceController.js");
 
+const router = express.Router();
 router.get("/", priceController.fetchAllPriceDatas);
 router.post("/", priceController.carryPriceData);
+router.put("/:id", priceController.update);
 module.exports = router;
