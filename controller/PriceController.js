@@ -20,15 +20,38 @@ module.exports = {
   carryPriceData: async (req, res) => {
     await priceModel
       .create(req.body)
-      .then(datas => {
-        res.status(200).json(datas);
+      .then(_ => {
+          const message = "Berhasil Menambah data harga";
+          res.status(response.CODE_SUCCESS)
+              .json(response.set(response.CODE_SUCCESS, message, true));
       })
-      .catch(err => {
-        res.status(401).json(err);
+      .catch(_ => {
+          const message = "Gagal Menambah Data Harga";
+          res.status(response.CODE_FAILURE)
+              .json(response.set(response.CODE_FAILURE, message, false));
       });
   },
 
   update: async function (req, res) {
-        // TODO : Logic Update Data.
+      const price = await priceModel.findOne({
+          where: req.params
+      });
+      
+      price.kelas = req.body.kelas;
+      price.tipe = req.body.tipe;
+      price.harga = req.body.harga;
+
+      await price
+        .save()
+        .then(_ => {
+            const message = "Berhasil Update data harga";
+            res.status(response.CODE_SUCCESS)
+                .json(response.set(response.CODE_SUCCESS, message, true));
+        })
+        .catch(_ => {
+            const message = "Gagal Update Data Harga";
+            res.status(response.CODE_FAILURE)
+                .json(response.set(response.CODE_FAILURE, message, false));
+        });
     }
 };
