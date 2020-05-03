@@ -2,6 +2,7 @@ const uniqid = require("uniqid");
 const { Op } = require("sequelize");
 const response = require('./response');
 const userModel = require("../models/UsersModel");
+const priceModel = require("../models/PriceModel");
 const transactionModel = require("../models/TransactionModel.js");
 const detailTransaction = require("../models/DetailTransactionModel.js");
 
@@ -40,6 +41,77 @@ module.exports = {
 
         code = response.CODE_SUCCESS;
         message = "Success Create Transactions";
+        res.status(code)
+            .json(response.set(code, message, true));
+    },
+
+    acceptOrder: async function (req, res) {
+        console.log('=> Handle Accept Order Request ');
+        console.log('=> body request');
+        console.log(req.body);
+        let totalTagihan = 0;
+        await req.body.weights
+            .forEach(async data => {
+                const transaction = await detailTransaction
+                    .findOne({
+                        where: {
+                            id: data.id,
+                            noNota: req.body.idBill,
+                        }
+                    });
+                const price = await priceModel
+                    .findOne({
+                        where: {
+                            idHarga: transaction.idHarga
+                        }
+                    });
+                totalTagihan += price.harga * data.weight;
+                console.log('=> price.harga');
+                console.log(price.harga);
+                console.log('=> data.weight');
+                console.log(data.weight);
+                console.log('=> total tagihan');
+                console.log(totalTagihan);
+                transaction.bobot = data.weight;
+                await transaction
+                    .save()
+                    .catch(err => {
+                        console.log('=> Have Error');
+                        console.log(err);
+                        code = response.CODE_FAILURE;
+                        message = "Gagal mengupdate data detail transactions.";
+                        res.status(code)
+                            .json(response.set(code, message, false));
+                    });
+            });
+        const transaction = await transactionModel
+            .findOne({
+                where: {
+                    noNota: req.body.idBill
+                }
+            })
+            .catch(err => {
+                console.log('=> Have Error');
+                console.log(err);
+                code = response.CODE_FAILURE;
+                message = "Gagal mengupdate data detail transactions.";
+                res.status(code)
+                    .json(response.set(code, message, false));
+            });
+        transaction.totalTagihan = totalTagihan;
+        transaction.statusPengerjaan = "ON PROGGRESS";
+        await transaction
+            .save()
+            .catch(err => {
+                console.log('=> Have Error');
+                console.log(err);
+                code = response.CODE_FAILURE;
+                message = "Gagal mengupdate data detail transactions.";
+                res.status(code)
+                    .json(response.set(code, message, false));
+            });
+        code = response.CODE_SUCCESS;
+        message = "Success mengupdate data detail transactions.";
         res.status(code)
             .json(response.set(code, message, true));
     },
