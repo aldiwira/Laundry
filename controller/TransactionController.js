@@ -30,11 +30,11 @@ module.exports = {
         const no_nota = uniqid.time();
         await transactionModel.create({
             noNota: no_nota,
-            idUser: req.body.id_user,
+            idUser: req.body.idUser,
             methodeDelivery: req.body.methodeDelivery
         });
-        await req.body.id_harga.forEach(price => detailTransaction.create({
-            idUser: price,
+        await req.body.orders.forEach(id => detailTransaction.create({
+            idHarga: id,
             noNota: no_nota,
         }));
 

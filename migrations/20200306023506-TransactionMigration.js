@@ -8,10 +8,12 @@ module.exports = {
                 primaryKey: true,
             },
             totalTagihan: {
-                type: Sequelize.INTEGER
+                type: Sequelize.INTEGER,
+                defaultValue: 0,
             },
             pembayaran: {
-                type: Sequelize.INTEGER
+                type: Sequelize.INTEGER,
+                defaultValue: 0,
             },
             statusPembayaran: {
                 type: Sequelize.BOOLEAN,
@@ -19,7 +21,7 @@ module.exports = {
             },
             statusPengerjaan: {
                 type: Sequelize.STRING,
-                defaultValue: "ON PROGGRESS",
+                defaultValue: "MENUNGGU",
             },
             methodeDelivery: {
                 type: Sequelize.STRING,
