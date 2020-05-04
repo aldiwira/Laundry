@@ -1,6 +1,10 @@
 const priceModel = require("../models/PriceModel.js");
 const response = require("./response");
 
+let code;
+let data;
+let message;
+
 module.exports = {
     fetchAllPriceDatas: async (req, res) => {
         await priceModel
@@ -66,4 +70,5 @@ module.exports = {
                     .json(response.set(response.CODE_FAILURE, message, false));
             });
     }
+
 };

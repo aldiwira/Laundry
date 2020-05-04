@@ -7,9 +7,9 @@ const uniqid = require("uniqid");
 let code;
 let data;
 let message;
+let SaltRound = 10;
 
 module.exports = {
-
     /**
      * Controller untuk login.
      * Sama seperti proses login pada umumnya terdapat validasi data

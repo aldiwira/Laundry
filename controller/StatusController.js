@@ -6,7 +6,6 @@ let code;
 let message;
 
 module.exports = {
-
     /**
      * [PUT] : /order/status/:id_detail_transaction
      */
@@ -35,3 +34,4 @@ module.exports = {
             });
     },
 };
+
