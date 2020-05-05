@@ -56,12 +56,12 @@ module.exports = {
       )
       .then((datas) => {
         code = response.CODE_SUCCESS;
-        message = "Success Create Order";
+        message = "Success Create Transactions";
         data = datas;
       })
       .catch((err) => {
         code = response.CODE_FAILURE;
-        message = "Failed Create Order";
+        message = "Failed Create Transactions";
         data = err;
       });
     res.status(code).json(response.set(code, message, data));
