@@ -33,8 +33,7 @@ module.exports = {
     const no_nota = uniqid.time();
     const orders = req.body.orders;
     const ordersList = [];
-
-    await orders.map((data) => {
+    orders.map((data) => {
       ordersList.push({
         bobot: data.bobot,
         noNota: no_nota,
@@ -66,7 +65,6 @@ module.exports = {
       });
     res.status(code).json(response.set(code, message, data));
   },
-
   acceptOrder: async function (req, res) {
     console.log("=> Handle Accept Order Request ");
     console.log("=> body request");
@@ -84,6 +82,7 @@ module.exports = {
           idHarga: transaction.idHarga,
         },
       });
+      //
       totalTagihan += price.harga * data.weight;
       console.log("=> price.harga");
       console.log(price.harga);
@@ -92,6 +91,7 @@ module.exports = {
       console.log("=> total tagihan");
       console.log(totalTagihan);
       transaction.bobot = data.weight;
+      //
       await transaction.save().catch((err) => {
         console.log("=> Have Error");
         console.log(err);
@@ -100,6 +100,7 @@ module.exports = {
         res.status(code).json(response.set(code, message, false));
       });
     });
+
     const transaction = await transactionModel
       .findOne({
         where: {
@@ -115,16 +116,21 @@ module.exports = {
       });
     transaction.totalTagihan = totalTagihan;
     transaction.statusPengerjaan = "ON PROGGRESS";
-    await transaction.save().catch((err) => {
-      console.log("=> Have Error");
-      console.log(err);
-      code = response.CODE_FAILURE;
-      message = "Gagal mengupdate data detail transactions.";
-      res.status(code).json(response.set(code, message, false));
-    });
-    code = response.CODE_SUCCESS;
-    message = "Success mengupdate data detail transactions.";
-    res.status(code).json(response.set(code, message, true));
+    await transaction
+      .save()
+      .then((result) => {
+        code = response.CODE_SUCCESS;
+        message = "Success mengupdate data detail transactions.";
+        res.status(code).json(response.set(code, message, result));
+      })
+      .catch((err) => {
+        console.log("=> Have Error");
+        console.log(err);
+        code = response.CODE_FAILURE;
+        message = "Gagal mengupdate data detail transactions.";
+        res.status(code).json(response.set(code, message, false));
+      });
+    console.log(totalTagihan);
   },
 
   /** [ADMIN][GET] : /admin/order/new */
