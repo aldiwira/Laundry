@@ -65,15 +65,15 @@ module.exports = {
       });
     res.status(code).json(response.set(code, message, data));
   },
-  acceptOrder: async function (req, res) {
-    console.log("=> Handle Accept Order Request ");
-    console.log("=> body request");
-    console.log(req.body);
-    let totalTagihan = 0;
-    await req.body.weights.forEach(async (data) => {
+  acceptOrders: async (req, res) => {
+    let weights = req.body.weights;
+    let totalHarga = 0;
+    let tootal = 0;
+    for (let index = 0; index < weights.length; index++) {
+      let weight = weights[index];
       const transaction = await detailTransaction.findOne({
         where: {
-          id: data.id,
+          id: weight.id,
           noNota: req.body.idBill,
         },
       });
@@ -82,57 +82,35 @@ module.exports = {
           idHarga: transaction.idHarga,
         },
       });
-      //
-      totalTagihan += price.harga * data.weight;
-      console.log("=> price.harga");
-      console.log(price.harga);
-      console.log("=> data.weight");
-      console.log(data.weight);
-      console.log("=> total tagihan");
-      console.log(totalTagihan);
-      transaction.bobot = data.weight;
-      //
-      await transaction.save().catch((err) => {
-        console.log("=> Have Error");
-        console.log(err);
-        code = response.CODE_FAILURE;
-        message = "Gagal mengupdate data detail transactions.";
-        res.status(code).json(response.set(code, message, false));
-      });
-    });
-
-    const transaction = await transactionModel
-      .findOne({
-        where: {
-          noNota: req.body.idBill,
-        },
-      })
-      .catch((err) => {
-        console.log("=> Have Error");
-        console.log(err);
-        code = response.CODE_FAILURE;
-        message = "Gagal mengupdate data detail transactions.";
-        res.status(code).json(response.set(code, message, false));
-      });
-    transaction.totalTagihan = totalTagihan;
-    transaction.statusPengerjaan = "ON PROGGRESS";
-    await transaction
-      .save()
-      .then((result) => {
-        code = response.CODE_SUCCESS;
-        message = "Success mengupdate data detail transactions.";
-        res.status(code).json(response.set(code, message, result));
-      })
-      .catch((err) => {
-        console.log("=> Have Error");
-        console.log(err);
-        code = response.CODE_FAILURE;
-        message = "Gagal mengupdate data detail transactions.";
-        res.status(code).json(response.set(code, message, false));
-      });
-    console.log(totalTagihan);
+      totalHarga = price.harga * weight.weight;
+      tootal = tootal + totalHarga;
+    }
+    console.log(tootal);
+    let datas = {
+      totalTagihan: tootal,
+      statusPengerjaan: "ON PROGGRESS",
+    };
+    let filter = {
+      where: {
+        noNota: req.body.idBill,
+      },
+    };
+    const updateDatas = await transactionModel.update(datas, filter);
+    if (updateDatas) {
+      await transactionModel
+        .findOne(filter)
+        .then((result) => {
+          code = response.CODE_SUCCESS;
+          message = "Success mengupdate data detail transactions.";
+          res.status(code).json(response.set(code, message, result));
+        })
+        .catch((err) => {
+          code = response.CODE_FAILURE;
+          message = "Gagal mengupdate data detail transactions.";
+          res.status(code).json(response.set(code, message, false));
+        });
+    }
   },
-
   /** [ADMIN][GET] : /admin/order/new */
   fetchStatusOrder: async function (req, res) {
     var status;
